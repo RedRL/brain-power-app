@@ -17,13 +17,13 @@
       <video 
         #breathingVideo
         class="breathing-video"
+        [src]="videoUrl"
         (timeupdate)="onTimeUpdate()"
         (loadedmetadata)="onVideoLoaded()"
         (play)="onPlay()"
         (pause)="onPause()"
         (error)="onVideoError($event)"
         crossorigin="anonymous">
-        <source src="https://brain-power-app.s3.eu-north-1.amazonaws.com/Chair+Yoga++Beginners+Breathwork+%26+Meditation+for+Seniors.mp4" type="video/mp4">
         <p>{{'video_not_supported'|t}}</p>
       </video>
     </div>

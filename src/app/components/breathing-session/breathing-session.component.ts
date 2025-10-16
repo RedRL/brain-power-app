@@ -22,6 +22,8 @@ export class BreathingSessionComponent implements OnInit {
   showCongratulations = false;
   isPlaying = false;
   isFullscreen = false;
+  videoType: string = 'youtube';
+  videoUrl: string = '';
 
   constructor(
     private router: Router,
@@ -30,7 +32,27 @@ export class BreathingSessionComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Component initialized
+    // Get video type from route query params
+    this.route.queryParams.subscribe(params => {
+      this.videoType = params['type'] || 'youtube';
+      this.setVideoUrl();
+    });
+  }
+
+  setVideoUrl() {
+    switch (this.videoType) {
+      case 'youtube':
+        this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/Chair+Yoga++Beginners+Breathwork+%26+Meditation+for+Seniors.mp4';
+        break;
+      case 'ai-youtube':
+        this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/Chair+Yoga++Beginners+Breathwork+%26+Meditation+for+Seniors.mp4';
+        break;
+      case 'ai-video':
+        this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/Sporty+Redhead+Breathing+Exercise.mp4';
+        break;
+      default:
+        this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/Chair+Yoga++Beginners+Breathwork+%26+Meditation+for+Seniors.mp4';
+    }
   }
 
   onVideoLoaded() {
