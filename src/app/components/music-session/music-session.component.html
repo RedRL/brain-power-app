@@ -1,110 +1,210 @@
 <app-header [title]="'music_session'|t"></app-header>
 
+<!-- Video Background -->
+<div class="video-background">
+  <video 
+    #backgroundVideo
+    class="background-video"
+    autoplay
+    loop
+    muted
+    playsinline
+    [src]="getBackgroundVideoUrl()">
+  </video>
+  <div class="video-overlay"></div>
+</div>
+
+<!-- Hidden Audio Element -->
+<audio 
+  #audioPlayer
+  (timeupdate)="onTimeUpdate()"
+  (loadedmetadata)="onAudioLoaded()"
+  (ended)="onTrackEnded()"
+  (play)="onPlay()"
+  (pause)="onPause()"
+  [src]="currentTrack?.url">
+</audio>
+
 <section class="content">
-  <div class="video-wrapper" #videoContainer>
-    <div class="video-frame">
-      <video 
-        #musicVideo
-        class="music-video"
-        controls
-        (timeupdate)="onTimeUpdate()"
-        (loadedmetadata)="onVideoLoaded()"
-        (play)="onPlay()"
-        (pause)="onPause()"
-        crossorigin="anonymous">
-        <source src="https://brain-power-app.s3.eu-north-1.amazonaws.com/Mozart-heb.mp4" type="video/mp4">
-        <p>{{'video_not_supported'|t}}</p>
-      </video>
+  <!-- Activity Section -->
+  <div class="activity-section">
+    <!-- Show text content if selected -->
+    <div class="full-text-display" *ngIf="showFullText">
+      <div class="full-text-display-content" #textContent (scroll)="onTextScroll($event)">
+        <p>{{ getActivityText() }}</p>
+      </div>
     </div>
-    
-    <!-- Custom Video Controls -->
-    <div class="custom-controls" [class.rtl]="translateService.lang === 'he'">
-      <!-- Rewind 5 seconds - Left -->
-      <div class="control-wrapper rewind-wrapper">
-        <button class="control-btn" (click)="rewind5Seconds()" aria-label="Rewind 5 seconds">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5V1L7 6L12 11V7C15.31 7 18 9.69 18 13C18 16.31 15.31 19 12 19C8.69 19 6 16.31 6 13H4C4 17.42 7.58 21 12 21C16.42 21 20 17.42 20 13C20 8.58 16.42 5 12 5Z" fill="currentColor" />
-            <text x="12" y="16" text-anchor="middle" font-size="9" fill="currentColor" font-weight="bold">5</text>
-          </svg>
-        </button>
-        <div class="tooltip tooltip-left">
-          <div class="tooltip-arrow"></div>
-          <span>{{'rewind_5_seconds'|t}}</span>
-        </div>
+
+    <!-- Show buttons if no text -->
+    <div *ngIf="!showFullText">
+      <!-- Activity Title -->
+      <div class="activity-title-container">
+        <h3 class="activity-title">{{'choose_activity'|t}}</h3>
       </div>
       
-      <!-- Play/Pause - Center -->
-      <div class="control-wrapper play-wrapper">
-        <button class="control-btn" (click)="togglePlayPause()" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'">
-          <svg *ngIf="!isPlaying" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M8 5V19L19 12L8 5Z" fill="currentColor" />
-          </svg>
-          <svg *ngIf="isPlaying" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z" fill="currentColor" />
-          </svg>
+      <!-- Main Activity Buttons -->
+      <div class="activity-buttons" *ngIf="!selectedActivity">
+        <button class="activity-btn" (click)="selectActivity('reading')">
+          <div class="activity-icon">📖</div>
+          <span>{{'reading'|t}}</span>
         </button>
-        <div class="tooltip tooltip-bottom">
-          <div class="tooltip-arrow"></div>
-          <span *ngIf="!isPlaying">{{'play_video'|t}}</span>
-          <span *ngIf="isPlaying">{{'pause_video'|t}}</span>
-        </div>
+        <button class="activity-btn" (click)="selectActivity('writing')">
+          <div class="activity-icon">✍️</div>
+          <span>{{'writing'|t}}</span>
+        </button>
+        <button class="activity-btn" (click)="selectActivity('slides')">
+          <div class="activity-icon">📊</div>
+          <span>{{'changing_slides'|t}}</span>
+        </button>
+        <button class="activity-btn" (click)="selectActivity('objects')">
+          <div class="activity-icon">🎯</div>
+          <span>{{'identify_objects'|t}}</span>
+        </button>
       </div>
-      
-      <!-- Fullscreen - Right -->
-      <div class="control-wrapper fullscreen-wrapper">
-        <button class="control-btn" (click)="toggleFullscreen()" [attr.aria-label]="isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'">
-          <svg *ngIf="!isFullscreen" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7 14H5V19H10V17H7V14ZM5 10H7V7H10V5H5V10ZM17 17H14V19H19V14H17V17ZM14 5V7H17V10H19V5H14Z" fill="currentColor" />
-          </svg>
-          <svg *ngIf="isFullscreen" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 16H8V19H10V14H5V16ZM8 8H5V10H10V5H8V8ZM14 19H16V16H19V14H14V19ZM16 8V5H14V10H19V8H16Z" fill="currentColor" />
-          </svg>
-        </button>
-        <div class="tooltip tooltip-right">
-          <div class="tooltip-arrow"></div>
-          <span *ngIf="!isFullscreen">{{'enter_fullscreen'|t}}</span>
-          <span *ngIf="isFullscreen">{{'exit_fullscreen'|t}}</span>
-        </div>
+
+      <!-- Specific Activity Options -->
+      <div class="specific-activity-section" *ngIf="selectedActivity">
+               <div class="specific-activity-buttons">
+                 <button 
+                   *ngFor="let option of getSpecificActivityOptions()" 
+                   class="specific-activity-btn"
+                   [class.completed]="isActivityCompleted(selectedActivity, option.id)"
+                   (click)="selectSpecificActivity(option)">
+                   <div class="specific-activity-icon">{{option.icon}}</div>
+                   <div class="specific-activity-content">
+                     <span>{{option.name}}</span>
+                     <div class="activity-progress-bar">
+                       <div class="activity-progress-fill" [style.width.%]="getActivityProgress(selectedActivity, option.id)"></div>
+                     </div>
+                     <div class="activity-progress-text">{{getActivityProgress(selectedActivity, option.id)}}%</div>
+                   </div>
+                 </button>
+               </div>
       </div>
     </div>
   </div>
-  
-  <!-- Progress Bar -->
-  <div class="progress-container">
-    <div class="progress-bar">
-      <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+
+         <!-- Congratulations Message -->
+         <div class="congratulations-overlay" *ngIf="showCongratulations">
+           <div class="congratulations-content">
+             <div class="congratulations-icon">🎉</div>
+             <h2>{{'congratulations'|t}}</h2>
+             <p>{{'activity_completed'|t}}</p>
+           </div>
+         </div>
+
+  <!-- Music Player Container (includes progress bar and player) -->
+  <div class="music-player-container">
+    <!-- Reading Progress Bar (only shown when reading) -->
+    <div class="reading-progress-container" *ngIf="showFullText">
+      <div class="reading-progress-label">{{'reading_progress'|t}}: {{readingProgress}}%</div>
+      <div class="reading-progress-bar">
+        <div class="reading-progress-fill" [style.width.%]="readingProgress"></div>
+      </div>
     </div>
-    <div class="progress-text">
-      <span>{{'video_progress'|t}}: {{progressPercentage | number:'1.0-0'}}%</span>
+
+    <!-- Compact Music Player -->
+    <div class="compact-music-player">
+    
+    <!-- Track Info -->
+    <div class="track-info">
+      <h3 class="track-title">
+        <span class="title-text">{{ getTrackTitle() || 'No Track Selected' }}</span>
+        <span class="separator"> - </span>
+        <span class="artist-text">{{ getArtistName() || 'Unknown Artist' }}</span>
+      </h3>
     </div>
+
+    <!-- Progress Bar with Time -->
+    <div class="progress-section">
+      <div class="time-display">
+        <!-- English: Current time on left, total time on right -->
+        <ng-container *ngIf="translateService.lang === 'en'">
+          <span class="current-time">{{ formatTime(currentTime) }}</span>
+          <span class="total-time">{{ formatTime(duration) }}</span>
+        </ng-container>
+        
+        <!-- Hebrew: Current time on left, total time on right -->
+        <ng-container *ngIf="translateService.lang === 'he'">
+          <span class="current-time">{{ formatTime(currentTime) }}</span>
+          <span class="total-time">{{ formatTime(duration) }}</span>
+        </ng-container>
+      </div>
+      <div class="progress-bar-container" (click)="seekTo($event)">
+        <div class="progress-bar-track"></div>
+        <div class="progress-bar-fill" [style.width.%]="progressPercentage"></div>
+        <div class="progress-thumb" 
+             [style.left.%]="translateService.lang === 'en' ? progressPercentage : null"
+             [style.right.%]="translateService.lang === 'he' ? progressPercentage : null"></div>
+      </div>
+    </div>
+
+    <!-- Music Controls -->
+    <div class="music-controls">
+      <!-- English (LTR): Previous - Play - Next -->
+      <ng-container *ngIf="translateService.lang === 'en'">
+        <button class="control-btn" (click)="previousTrack()" [disabled]="currentTrackIndex === 0">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6H8V18H6V6ZM9.5 12L18 6V18L9.5 12Z" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button class="control-btn play-btn" (click)="togglePlayPause()">
+          <svg *ngIf="!isPlaying" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 5V19L19 12L8 5Z" fill="currentColor" />
+          </svg>
+          <svg *ngIf="isPlaying" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button class="control-btn" (click)="nextTrack()" [disabled]="currentTrackIndex === playlist.length - 1">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 18L14.5 12L6 6V18ZM16 6V18H18V6H16Z" fill="currentColor" />
+          </svg>
+        </button>
+      </ng-container>
+
+      <!-- Hebrew (RTL): Previous - Play - Next -->
+      <ng-container *ngIf="translateService.lang === 'he'">
+        <button class="control-btn" (click)="previousTrack()" [disabled]="currentTrackIndex === 0">
+          <!-- Previous button with next icon (right arrow) for RTL -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 18L14.5 12L6 6V18ZM16 6V18H18V6H16Z" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button class="control-btn play-btn" (click)="togglePlayPause()">
+          <svg *ngIf="!isPlaying" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 5V19L19 12L8 5Z" fill="currentColor" />
+          </svg>
+          <svg *ngIf="isPlaying" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button class="control-btn" (click)="nextTrack()" [disabled]="currentTrackIndex === playlist.length - 1">
+          <!-- Next button with previous icon (left arrow) for RTL -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 6H8V18H6V6ZM9.5 12L18 6V18L9.5 12Z" fill="currentColor" />
+          </svg>
+        </button>
+      </ng-container>
+    </div>
+
+  </div>
   </div>
 
   <!-- Congratulations Message -->
   <div class="congratulations-overlay" *ngIf="showCongratulations">
     <div class="congratulations-card">
-      <div class="congrats-icon">🎉</div>
+      <div class="congrats-icon">🎵</div>
       <h2>{{'congratulations'|t}}</h2>
-      <p>{{'video_completed_message'|t}}</p>
+      <p>{{'music_session_completed'|t}}</p>
       <button class="btn-primary" (click)="goBack()">
         {{'continue'|t}}
       </button>
     </div>
   </div>
 
-  <!-- Text content below video in normal mode -->
-  <div class="session-info">
-    <h3>{{'music_session'|t}}</h3>
-    <p>{{'mozart_video_description'|t}}</p>
-  </div>
-  
-  <!-- Overlay text that only appears in fullscreen mode -->
-  <div class="fullscreen-overlay">
-    <div class="fullscreen-content">
-      <h3>{{'music_session'|t}}</h3>
-      <p>{{'music_session_description'|t}}</p>
-      <div class="fullscreen-instructions">
-        <p>{{'fullscreen_instructions'|t}}</p>
-      </div>
-    </div>
-  </div>
 </section>
