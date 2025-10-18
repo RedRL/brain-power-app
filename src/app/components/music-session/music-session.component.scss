@@ -416,6 +416,18 @@
   transform: translateY(-2px);
 }
 
+.activity-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.activity-btn:disabled:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(0);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
 .activity-icon {
   font-size: 2rem;
   margin: 0;
@@ -574,6 +586,7 @@
   max-height: 60vh;
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  direction: rtl;
 }
 
 .full-text-display-content p {
@@ -584,6 +597,7 @@
   white-space: pre-wrap;
   text-align: justify;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  direction: rtl;
 }
 
 /* Reading Progress Bar */
@@ -921,6 +935,7 @@
   margin: 0;
   white-space: pre-wrap;
   text-align: justify;
+  direction: rtl;
 }
 
 /* Congratulations Overlay */

@@ -73,11 +73,10 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   // Sub-activities for each main activity
   subActivities = {
     reading: [
-      { id: 'novel', name: 'Novel', translationKey: 'novel', icon: '📖' },
-      { id: 'newspaper', name: 'Newspaper', translationKey: 'newspaper', icon: '📰' },
-      { id: 'magazine', name: 'Magazine', translationKey: 'magazine', icon: '📚' },
-      { id: 'article', name: 'Article', translationKey: 'article', icon: '📄' },
-      { id: 'poetry', name: 'Poetry', translationKey: 'poetry', icon: '📜' }
+      { id: 'novel', name: 'רומן', translationKey: 'novel', icon: '📖' },
+      { id: 'newspaper', name: 'עיתון', translationKey: 'newspaper', icon: '📰' },
+      { id: 'article', name: 'מאמר', translationKey: 'article', icon: '📄' },
+      { id: 'poetry', name: 'שירה', translationKey: 'poetry', icon: '📜' }
     ],
     writing: [
       { id: 'connect_dots', name: 'חברו את הנקודות', translationKey: 'connect_dots', icon: '🔗' },
