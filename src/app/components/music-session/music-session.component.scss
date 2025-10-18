@@ -631,7 +631,7 @@
 
 .game-instructions {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: -10px;
 }
 
 .game-instructions h3 {
@@ -690,16 +690,20 @@
 .maze-game {
   padding: 20px;
   background: transparent;
-  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: fit-content;
 }
 
 .maze-container {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  align-items: center;
+  margin: 20px auto;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
-  padding: 20px;
+  width: fit-content;
 }
 
 .maze-canvas {

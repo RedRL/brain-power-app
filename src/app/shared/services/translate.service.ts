@@ -1858,7 +1858,7 @@ const he: Dict = {
   puzzle: 'פאזל',
   // Game instructions
   connect_dots_instructions: 'העבירו קו בין כל הנקודות כדי להשלים את הציור',
-  maze_instructions: 'צייר נתיב מנקודת ההתחלה הירוקה לנקודת הסיום האדומה',
+  maze_instructions: 'ציירו נתיב מנקודת ההתחלה הירוקה לנקודת הסיום האדומה',
   progress: 'התקדמות',
   reset_game: 'איפוס משחק',
   // Song name translations

@@ -1033,67 +1033,95 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
 
   drawMaze() {
     if (!this.mazeCtx || !this.mazeCanvasElement) return;
-    
-    this.mazeCtx.clearRect(0, 0, this.mazeCanvasElement.width, this.mazeCanvasElement.height);
-    
-    // Draw maze walls
-    this.mazeCtx.strokeStyle = '#333';
-    this.mazeCtx.lineWidth = 2;
-    this.mazeCtx.beginPath();
-    
-    // Simple maze pattern
-    this.mazeCtx.moveTo(20, 20);
-    this.mazeCtx.lineTo(280, 20);
-    this.mazeCtx.lineTo(280, 180);
-    this.mazeCtx.lineTo(20, 180);
-    this.mazeCtx.lineTo(20, 20);
-    
-    // Internal walls
-    this.mazeCtx.moveTo(80, 20);
-    this.mazeCtx.lineTo(80, 100);
-    this.mazeCtx.moveTo(200, 20);
-    this.mazeCtx.lineTo(200, 100);
-    this.mazeCtx.moveTo(80, 100);
-    this.mazeCtx.lineTo(200, 100);
-    
-    this.mazeCtx.stroke();
-    
-    // Draw start and end points
-    this.mazeCtx.fillStyle = '#4CAF50';
-    this.mazeCtx.beginPath();
-    this.mazeCtx.arc(30, 30, 8, 0, 2 * Math.PI);
-    this.mazeCtx.fill();
-    
-    this.mazeCtx.fillStyle = '#F44336';
-    this.mazeCtx.beginPath();
-    this.mazeCtx.arc(270, 170, 8, 0, 2 * Math.PI);
-    this.mazeCtx.fill();
-    
-    // Draw all previous paths (preserved exactly as drawn)
+    const ctx = this.mazeCtx;
+    ctx.clearRect(0, 0, this.mazeCanvasElement.width, this.mazeCanvasElement.height);
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+
+    // Draw all segments of the static maze so draw logic and collision share the same source
+    const segments = this.getStaticMazeSegments();
+    segments.forEach(s => {
+      ctx.beginPath();
+      ctx.moveTo(s.start.x, s.start.y);
+      ctx.lineTo(s.end.x, s.end.y);
+      ctx.stroke();
+    });
+
+    // Start/End points
+    ctx.fillStyle = '#4CAF50';
+    ctx.beginPath();
+    ctx.arc(40, 36, 8, 0, Math.PI * 2);
+    ctx.fill();
+    this.mazeStartPosition = { x: 40, y: 36 };
+
+    ctx.fillStyle = '#F44336';
+    ctx.beginPath();
+    ctx.arc(268, 166, 8, 0, Math.PI * 2);
+    ctx.fill();
+    this.mazeEndPosition = { x: 268, y: 166 };
+
+    // Previously completed paths
     this.mazeCompletedPaths.forEach(path => {
       if (path.length > 1) {
-        this.mazeCtx!.strokeStyle = '#2196F3';
-        this.mazeCtx!.lineWidth = 3;
-        this.mazeCtx!.beginPath();
-        this.mazeCtx!.moveTo(path[0].x, path[0].y);
-        for (let i = 1; i < path.length; i++) {
-          this.mazeCtx!.lineTo(path[i].x, path[i].y);
-        }
-        this.mazeCtx!.stroke();
+        ctx.strokeStyle = '#2196F3';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
+        ctx.stroke();
       }
     });
-    
-    // Draw current path being drawn
+
+    // Current path being drawn
     if (this.mazePath.length > 1) {
-      this.mazeCtx.strokeStyle = '#FF9800';
-      this.mazeCtx.lineWidth = 3;
-      this.mazeCtx.beginPath();
-      this.mazeCtx.moveTo(this.mazePath[0].x, this.mazePath[0].y);
-      for (let i = 1; i < this.mazePath.length; i++) {
-        this.mazeCtx.lineTo(this.mazePath[i].x, this.mazePath[i].y);
-      }
-      this.mazeCtx.stroke();
+      ctx.strokeStyle = '#FF9800';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(this.mazePath[0].x, this.mazePath[0].y);
+      for (let i = 1; i < this.mazePath.length; i++) ctx.lineTo(this.mazePath[i].x, this.mazePath[i].y);
+      ctx.stroke();
     }
+  }
+
+  // Exact maze segments to match the screenshot (shared by renderer and collision)
+  private getStaticMazeSegments(): Array<{ start: { x: number, y: number }, end: { x: number, y: number } }> {
+    const segs: Array<{ start: { x: number, y: number }, end: { x: number, y: number } }> = [];
+
+    // Dimensions
+    const left = 28, top = 28, right = 272, bottom = 172;
+
+    // Outer border with gaps: top-left entrance, bottom-right exit
+    segs.push({ start: { x: 50, y: top }, end: { x: right, y: top } });
+    segs.push({ start: { x: left, y: top + 20 }, end: { x: left, y: bottom } });
+    segs.push({ start: { x: left, y: bottom }, end: { x: right, y: bottom } });
+    segs.push({ start: { x: right, y: top }, end: { x: right, y: bottom - 20 } });
+
+    // Build alternating-gap nested rectangles to form a single long corridor like the reference
+    const buildLayer = (l: number, t: number, r: number, b: number, gapSide: 'top'|'right'|'bottom'|'left', gapSize = 38) => {
+      const gs = gapSize;
+      if (gapSide !== 'top')    segs.push({ start: { x: l, y: t }, end: { x: r, y: t } });
+      else                      segs.push({ start: { x: l + gs, y: t }, end: { x: r, y: t } });
+      if (gapSide !== 'right')  segs.push({ start: { x: r, y: t }, end: { x: r, y: b } });
+      else                      segs.push({ start: { x: r, y: t }, end: { x: r, y: b - gs } });
+      if (gapSide !== 'bottom') segs.push({ start: { x: r, y: b }, end: { x: l, y: b } });
+      else                      segs.push({ start: { x: r - gs, y: b }, end: { x: l, y: b } });
+      if (gapSide !== 'left')   segs.push({ start: { x: l, y: b }, end: { x: l, y: t } });
+      else                      segs.push({ start: { x: l, y: b }, end: { x: l, y: t + gs } });
+    };
+
+    const step = 20; // shrink per layer
+    let l = 48, t = 48, r = 252, b = 152;
+    const sides: Array<'top'|'right'|'bottom'|'left'> = ['top', 'right', 'bottom', 'left', 'top', 'right', 'bottom'];
+    for (let i = 0; i < sides.length; i++) {
+      buildLayer(l, t, r, b, sides[i], 34);
+      l += step; t += step; r -= step; b -= step;
+    }
+
+    // Add a few inner horizontal bars like in the reference right block
+    segs.push({ start: { x: l - 10, y: t + 20 }, end: { x: r + 10, y: t + 20 } });
+    segs.push({ start: { x: l + 10, y: t + 40 }, end: { x: r - 10, y: t + 40 } });
+
+    return segs;
   }
 
   onMazeMouseDown(event: MouseEvent) {
@@ -1108,28 +1136,31 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   handleMazeStart(event: MouseEvent | TouchEvent) {
     const pos = this.getMazeCanvasPosition(event);
     
-    // Check if starting from the start circle (green circle) OR from an existing line
+    // Check if starting from the start circle (green circle) - only allowed for the first line
     const distanceFromStart = Math.sqrt(
       Math.pow(pos.x - this.mazeStartPosition.x, 2) + 
       Math.pow(pos.y - this.mazeStartPosition.y, 2)
     );
     
-    // Check if touching any existing line (within 20 pixels)
+    // Check if actually touching/intersecting with any existing line
     let touchingExistingLine = false;
     this.mazeCompletedPaths.forEach(path => {
-      for (let i = 0; i < path.length; i++) {
-        const distance = Math.sqrt(
-          Math.pow(pos.x - path[i].x, 2) + 
-          Math.pow(pos.y - path[i].y, 2)
-        );
-        if (distance <= 20) {
+      for (let i = 0; i < path.length - 1; i++) {
+        // Check distance from point to line segment
+        const lineStart = path[i];
+        const lineEnd = path[i + 1];
+        const distance = this.distancePointToLineSegment(pos, lineStart, lineEnd);
+        if (distance <= 5) { // Much smaller threshold - must actually be on the line
           touchingExistingLine = true;
           break;
         }
       }
     });
     
-    if (distanceFromStart <= 15 || touchingExistingLine) {
+    // Allow starting from green circle only if no lines have been drawn yet
+    const canStartFromGreenCircle = this.mazeCompletedPaths.length === 0 && distanceFromStart <= 15;
+    
+    if (canStartFromGreenCircle || touchingExistingLine) {
       this.mazePath = [pos];
       this.isDrawingMaze = true;
       this.updateMazeProgress();
@@ -1165,14 +1196,22 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
       
       // Only add point if it's close enough (continuous drawing)
       if (distance <= 20) {
-        this.mazePath.push(pos);
-        this.drawMaze();
-        this.updateMazeProgress();
-        
-        // Check if reached the end
-        if (Math.abs(pos.x - this.mazeEndPosition.x) < 15 && Math.abs(pos.y - this.mazeEndPosition.y) < 15) {
-          this.mazeProgress = 100;
-          this.onMazeComplete();
+        // Check if adding this point would create a collision with borders
+        const testPath = [...this.mazePath, pos];
+        if (!this.checkPathCollisionWithBorders(testPath)) {
+          this.mazePath.push(pos);
+          this.drawMaze();
+          this.updateMazeProgress();
+          
+          // Check if reached the end
+          if (Math.abs(pos.x - this.mazeEndPosition.x) < 15 && Math.abs(pos.y - this.mazeEndPosition.y) < 15) {
+            this.mazeProgress = 100;
+            this.onMazeComplete();
+          }
+        } else {
+          // Stop drawing if we hit a border
+          console.log('Hit border - stopping line');
+          this.handleMazeEnd();
         }
       }
     }
@@ -1189,8 +1228,14 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
 
   handleMazeEnd() {
     if (this.isDrawingMaze && this.mazePath.length > 1) {
-      // Save the complete path exactly as drawn
-      this.mazeCompletedPaths.push([...this.mazePath]);
+      // Check if the path collides with any borders
+      if (this.checkPathCollisionWithBorders(this.mazePath)) {
+        // Path is invalid - erase it by not saving it
+        console.log('Invalid path - touches border, erasing...');
+      } else {
+        // Path is valid - save it
+        this.mazeCompletedPaths.push([...this.mazePath]);
+      }
       
       // Reset current path
       this.mazePath = [];
@@ -1227,10 +1272,95 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     };
   }
 
+  // Helper function to calculate distance from a point to a line segment
+  distancePointToLineSegment(point: {x: number, y: number}, lineStart: {x: number, y: number}, lineEnd: {x: number, y: number}): number {
+    const A = point.x - lineStart.x;
+    const B = point.y - lineStart.y;
+    const C = lineEnd.x - lineStart.x;
+    const D = lineEnd.y - lineStart.y;
+
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    
+    if (lenSq === 0) {
+      // Line start and end are the same point
+      return Math.sqrt(A * A + B * B);
+    }
+    
+    let param = dot / lenSq;
+    
+    let xx, yy;
+    if (param < 0) {
+      xx = lineStart.x;
+      yy = lineStart.y;
+    } else if (param > 1) {
+      xx = lineEnd.x;
+      yy = lineEnd.y;
+    } else {
+      xx = lineStart.x + param * C;
+      yy = lineStart.y + param * D;
+    }
+
+    const dx = point.x - xx;
+    const dy = point.y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // Define maze border segments (same as in drawMaze)
+  getMazeBorders(): Array<{start: {x: number, y: number}, end: {x: number, y: number}}> {
+    // Use the same static segments that the renderer uses
+    return this.getStaticMazeSegments();
+  }
+
+  // Check if two line segments intersect
+  doLineSegmentsIntersect(line1Start: {x: number, y: number}, line1End: {x: number, y: number}, 
+                          line2Start: {x: number, y: number}, line2End: {x: number, y: number}): boolean {
+    const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) - 
+                  (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
+    
+    if (Math.abs(denom) < 0.0001) {
+      // Lines are parallel
+      return false;
+    }
+    
+    const t1 = ((line2Start.x - line1Start.x) * (line2End.y - line2Start.y) - 
+                (line2Start.y - line1Start.y) * (line2End.x - line2Start.x)) / denom;
+    
+    const t2 = ((line2Start.x - line1Start.x) * (line1End.y - line1Start.y) - 
+                (line2Start.y - line1Start.y) * (line1End.x - line1Start.x)) / denom;
+    
+    // Check if intersection point is within both line segments
+    return t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
+  }
+
+  // Check if a drawn path intersects with any maze borders
+  checkPathCollisionWithBorders(path: Array<{x: number, y: number}>): boolean {
+    const borders = this.getMazeBorders();
+    
+    // Check each segment of the path against all border segments
+    for (let i = 0; i < path.length - 1; i++) {
+      const pathSegment = {
+        start: path[i],
+        end: path[i + 1]
+      };
+      
+      for (const border of borders) {
+        if (this.doLineSegmentsIntersect(
+          pathSegment.start, pathSegment.end,
+          border.start, border.end
+        )) {
+          return true; // Collision detected
+        }
+      }
+    }
+    
+    return false; // No collision
+  }
+
   updateMazeProgress() {
     // Calculate progress based on path length and complexity
     const maxPathLength = 200;
-    this.mazeProgress = Math.min(Math.round((this.mazePath.length / maxPathLength) * 100), 99);
+    this.mazeProgress = Math.min(Math.round((this.mazePath.length / maxPathLength) * 100), 100);
     
     // Update activity progress
     if (this.selectedActivity && this.selectedSubActivity) {
@@ -1241,11 +1371,14 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   }
 
   onMazeComplete() {
+    this.mazeProgress = 100;
     this.showCongratulations = true;
     
     if (this.selectedActivity && this.selectedSubActivity) {
       const activityKey = `${this.selectedActivity}_${this.selectedSubActivity.id}`;
       this.completedActivities.add(activityKey);
+      this.activityProgress[activityKey] = 100;
+      localStorage.setItem(`progress_${activityKey}`, '100');
     }
     
     setTimeout(() => {
