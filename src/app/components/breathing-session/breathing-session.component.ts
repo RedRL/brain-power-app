@@ -45,7 +45,7 @@ export class BreathingSessionComponent implements OnInit {
         this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/videos/Chair+Yoga++Beginners+Breathwork+%26+Meditation+for+Seniors.mp4';
         break;
       case 'ai-youtube':
-        this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/videos/Chair+Yoga++Beginners+Breathwork+%26+Meditation+for+Seniors.mp4';
+        this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/videos/Sporty+Green-Haired+Breathing+Exercise+30sec.mp4.mp4';
         break;
       case 'ai-video':
         this.videoUrl = 'https://brain-power-app.s3.eu-north-1.amazonaws.com/videos/Sporty+Redhead+Breathing+Exercise.mp4';
