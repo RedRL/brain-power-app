@@ -45,8 +45,30 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   activityProgress: { [key: string]: number } = {};
   completedActivities: Set<string> = new Set();
   
+  // Connect the Dots Game properties
+  connectDotsProgress = 0;
+  dots: Array<{x: number, y: number, number: number, connected: boolean}> = [];
+  lines: Array<{start: {x: number, y: number}, end: {x: number, y: number}}> = [];
+  isDrawing = false;
+  currentDotIndex = 0;
+  startDot: {x: number, y: number, number: number, connected: boolean} | null = null;
+  canvas: HTMLCanvasElement | null = null;
+  ctx: CanvasRenderingContext2D | null = null;
+  
+  // Maze Game properties
+  mazeProgress = 0;
+  mazePath: Array<{x: number, y: number}> = [];
+  mazeCompletedPaths: Array<Array<{x: number, y: number}>> = [];
+  isDrawingMaze = false;
+  mazeStartPosition: {x: number, y: number} = {x: 30, y: 30};
+  mazeEndPosition: {x: number, y: number} = {x: 270, y: 170};
+  mazeCanvasElement: HTMLCanvasElement | null = null;
+  mazeCtx: CanvasRenderingContext2D | null = null;
+  
   @ViewChild('textContent') textContent!: ElementRef<HTMLDivElement>;
   @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;
+  @ViewChild('connectDotsCanvas') connectDotsCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('mazeCanvas') mazeCanvas!: ElementRef<HTMLCanvasElement>;
   
   // Sub-activities for each main activity
   subActivities = {
@@ -58,10 +80,8 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
       { id: 'poetry', name: 'Poetry', translationKey: 'poetry', icon: '📜' }
     ],
     writing: [
-      { id: 'journal', name: 'Journal', translationKey: 'journal', icon: '📔' },
-      { id: 'letter', name: 'Letter', translationKey: 'letter', icon: '✉️' },
-      { id: 'essay', name: 'Essay', translationKey: 'essay', icon: '📝' },
-      { id: 'notes', name: 'Notes', translationKey: 'notes', icon: '🗒️' }
+      { id: 'connect_dots', name: 'חברו את הנקודות', translationKey: 'connect_dots', icon: '🔗' },
+      { id: 'solve_maze', name: 'פתור מבוך', translationKey: 'solve_maze', icon: '🌀' }
     ],
     slides: [
       { id: 'presentation', name: 'Presentation', translationKey: 'presentation', icon: '📊' },
@@ -71,9 +91,7 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     ],
     objects: [
       { id: 'puzzle', name: 'Puzzle', translationKey: 'puzzle', icon: '🧩' },
-      { id: 'memory', name: 'Memory Game', translationKey: 'memory_game', icon: '🎴' },
-      { id: 'spot', name: 'Spot Differences', translationKey: 'spot_differences', icon: '🔍' },
-      { id: 'pattern', name: 'Pattern Recognition', translationKey: 'pattern_recognition', icon: '🎯' }
+      { id: 'memory_game', name: 'Memory Game', translationKey: 'memory_game', icon: '🎴' }
     ]
   };
 
@@ -242,8 +260,18 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // Clear any cached activity data to ensure fresh start
+    this.clearCachedActivityData();
+    
     // Override the browser back button behavior
     this.setupCustomBackButton();
+  }
+
+  clearCachedActivityData() {
+    // Clear any cached activity selections that might interfere
+    localStorage.removeItem('selectedActivity');
+    localStorage.removeItem('selectedSpecificActivity');
+    localStorage.removeItem('showFullText');
   }
 
   setupCustomBackButton() {
@@ -389,6 +417,7 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     this.selectedActivity = activity;
     localStorage.setItem('selectedActivity', activity);
     console.log('Selected activity:', activity);
+    console.log('Writing sub-activities:', this.subActivities.writing);
   }
 
   selectSubActivity(subActivityId: string) {
@@ -413,39 +442,13 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     }
   }
 
+  getSubActivities(): any[] {
+    if (!this.selectedActivity) return [];
+    return this.subActivities[this.selectedActivity as keyof typeof this.subActivities] || [];
+  }
+
   getSpecificActivityOptions(): any[] {
-    switch (this.selectedActivity) {
-      case 'reading':
-        return [
-          { id: 'novel', name: this.translateService.t('novel'), icon: '📚' },
-          { id: 'newspaper', name: this.translateService.t('newspaper'), icon: '📰' },
-          { id: 'article', name: this.translateService.t('article'), icon: '📄' },
-          { id: 'poetry', name: this.translateService.t('poetry'), icon: '📜' }
-        ];
-      case 'writing':
-        return [
-          { id: 'journal', name: this.translateService.t('journal'), icon: '📝' },
-          { id: 'essay', name: this.translateService.t('essay'), icon: '✍️' },
-          { id: 'letter', name: this.translateService.t('letter'), icon: '💌' },
-          { id: 'story', name: this.translateService.t('story'), icon: '📖' }
-        ];
-      case 'slides':
-        return [
-          { id: 'presentation', name: this.translateService.t('presentation'), icon: '📊' },
-          { id: 'slideshow', name: this.translateService.t('slideshow'), icon: '🎬' },
-          { id: 'meeting', name: this.translateService.t('meeting'), icon: '👥' },
-          { id: 'training', name: this.translateService.t('training'), icon: '🎓' }
-        ];
-      case 'objects':
-        return [
-          { id: 'shapes', name: this.translateService.t('shapes'), icon: '🔷' },
-          { id: 'colors', name: this.translateService.t('colors'), icon: '🎨' },
-          { id: 'patterns', name: this.translateService.t('patterns'), icon: '🌀' },
-          { id: 'objects', name: this.translateService.t('objects'), icon: '🎯' }
-        ];
-      default:
-        return [];
-    }
+    return this.getSubActivities();
   }
 
   selectSpecificActivity(option: any) {
@@ -453,6 +456,17 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     this.showFullText = true;
     localStorage.setItem('selectedSpecificActivity', JSON.stringify(option));
     console.log('Selected specific activity:', option);
+    
+    // Initialize games if selected
+    if (option.id === 'connect_dots') {
+      setTimeout(() => {
+        this.initConnectDotsGame();
+      }, 100);
+    } else if (option.id === 'solve_maze') {
+      setTimeout(() => {
+        this.initMazeGame();
+      }, 100);
+    }
     
     // Restore scroll position and reading progress after view is rendered
     setTimeout(() => {
@@ -573,9 +587,22 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   getActivityText(): string {
     if (!this.selectedSubActivity) return '';
     
+    // Games don't have text content - return empty string
+    if (this.selectedSubActivity.id === 'connect_dots' || this.selectedSubActivity.id === 'solve_maze') {
+      return '';
+    }
+    
     // Return sample text based on activity
     const activityKey = `${this.selectedActivity}_${this.selectedSubActivity.id}_text`;
     return this.translateService.t(activityKey);
+  }
+
+  getActivityTitle(): string {
+    // Show "סימון על מסך" when in writing sub-menu, otherwise show "בחרו פעילות"
+    if (this.selectedActivity === 'writing' && !this.showFullText) {
+      return 'סימון על המסך';
+    }
+    return this.translateService.t('choose_activity');
   }
 
   getTrackTitle(): string {
@@ -633,6 +660,606 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
       this.saveScrollPosition();
       this.saveVideoTimestamp();
     }
+  }
+
+  // Connect the Dots Game Methods
+  initConnectDotsGame() {
+    if (!this.connectDotsCanvas) return;
+    
+    this.canvas = this.connectDotsCanvas.nativeElement;
+    this.ctx = this.canvas.getContext('2d');
+    
+    if (!this.ctx) return;
+    
+    // Create dots for an open book shape - bigger and more sparse
+    this.dots = [
+      // Book spine (center binding)
+      { x: 150, y: 20, number: 1, connected: false },   // Start - top of spine
+      { x: 150, y: 60, number: 2, connected: false },   // Middle of spine
+      { x: 150, y: 100, number: 3, connected: false },  // Center of spine
+      { x: 150, y: 140, number: 4, connected: false },  // Lower spine
+      { x: 150, y: 180, number: 5, connected: false },  // Bottom of spine
+      
+      // Left page outline
+      { x: 50, y: 20, number: 6, connected: false },    // Top left corner
+      { x: 20, y: 60, number: 7, connected: false },    // Left side top
+      { x: 30, y: 100, number: 8, connected: false },   // Left side middle
+      { x: 40, y: 140, number: 9, connected: false },   // Left side bottom
+      { x: 60, y: 180, number: 10, connected: false },  // Bottom left corner
+      
+      // Right page outline
+      { x: 250, y: 20, number: 11, connected: false },  // Top right corner
+      { x: 280, y: 60, number: 12, connected: false },  // Right side top
+      { x: 270, y: 100, number: 13, connected: false }, // Right side middle
+      { x: 260, y: 140, number: 14, connected: false }, // Right side bottom
+      { x: 240, y: 180, number: 15, connected: false }, // Bottom right corner
+      
+      // Left page content lines
+      { x: 80, y: 40, number: 16, connected: false },   // Left page line 1
+      { x: 70, y: 80, number: 17, connected: false },   // Left page line 2
+      { x: 75, y: 120, number: 18, connected: false },  // Left page line 3
+      { x: 85, y: 160, number: 19, connected: false },  // Left page line 4
+      
+      // Right page content lines
+      { x: 220, y: 40, number: 20, connected: false },  // Right page line 1
+      { x: 230, y: 80, number: 21, connected: false },  // Right page line 2
+      { x: 225, y: 120, number: 22, connected: false }  // Right page line 3
+    ];
+    
+    this.lines = [];
+    this.currentDotIndex = 0;
+    this.connectDotsProgress = 0;
+    
+    this.drawConnectDots();
+  }
+
+  drawConnectDots() {
+    if (!this.ctx || !this.canvas) return;
+    
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    // Draw completed lines
+    this.ctx.strokeStyle = '#ff6b35';
+    this.ctx.lineWidth = 3;
+    this.ctx.setLineDash([]);
+    
+    this.lines.forEach(line => {
+      this.ctx!.beginPath();
+      this.ctx!.moveTo(line.start.x, line.start.y);
+      this.ctx!.lineTo(line.end.x, line.end.y);
+      this.ctx!.stroke();
+    });
+    
+    // Draw dots with white fill - bigger sizes and bold numbers
+    this.dots.forEach((dot, index) => {
+      // First dot (dot 1) should be orange fill with larger size
+      if (dot.number === 1) {
+        this.ctx!.fillStyle = '#ff6b35';
+        this.ctx!.strokeStyle = '#fff';
+        this.ctx!.lineWidth = 3;
+        
+        this.ctx!.beginPath();
+        this.ctx!.arc(dot.x, dot.y, 16, 0, 2 * Math.PI); // Bigger radius for first dot
+        this.ctx!.fill();
+        this.ctx!.stroke();
+        
+        // Draw number 1 in white - bold
+        this.ctx!.fillStyle = '#fff';
+        this.ctx!.font = 'bold 16px Arial';
+        this.ctx!.textAlign = 'center';
+        this.ctx!.textBaseline = 'middle';
+        this.ctx!.fillText('1', dot.x, dot.y);
+      } else if (dot.number === this.dots.length) {
+        // Last dot should be more visible (green fill with larger size)
+        this.ctx!.fillStyle = '#4CAF50';
+        this.ctx!.strokeStyle = '#fff';
+        this.ctx!.lineWidth = 3;
+        
+        this.ctx!.beginPath();
+        this.ctx!.arc(dot.x, dot.y, 14, 0, 2 * Math.PI); // Bigger for last dot
+        this.ctx!.fill();
+        this.ctx!.stroke();
+        
+        // Draw number in white - bold
+        this.ctx!.fillStyle = '#fff';
+        this.ctx!.font = 'bold 15px Arial';
+        this.ctx!.textAlign = 'center';
+        this.ctx!.textBaseline = 'middle';
+        this.ctx!.fillText(dot.number.toString(), dot.x, dot.y);
+      } else {
+        // Other dots are white fill - bigger
+        this.ctx!.fillStyle = '#fff';
+        this.ctx!.strokeStyle = '#333';
+        this.ctx!.lineWidth = 3;
+        
+        this.ctx!.beginPath();
+        this.ctx!.arc(dot.x, dot.y, 12, 0, 2 * Math.PI); // Bigger radius
+        this.ctx!.fill();
+        this.ctx!.stroke();
+        
+        // Draw numbers in dark text - bold
+        this.ctx!.fillStyle = '#333';
+        this.ctx!.font = 'bold 14px Arial';
+        this.ctx!.textAlign = 'center';
+        this.ctx!.textBaseline = 'middle';
+        this.ctx!.fillText(dot.number.toString(), dot.x, dot.y);
+      }
+    });
+  }
+
+  getCanvasPosition(event: MouseEvent | TouchEvent): { x: number, y: number } {
+    if (!this.canvas) return { x: 0, y: 0 };
+    
+    const rect = this.canvas.getBoundingClientRect();
+    let clientX: number, clientY: number;
+    
+    if ('touches' in event) {
+      // For touch events, use touches[0] if available, otherwise use changedTouches[0]
+      if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+      } else if (event.changedTouches && event.changedTouches.length > 0) {
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+      } else {
+        return { x: 0, y: 0 };
+      }
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+    
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  onCanvasMouseDown(event: MouseEvent) {
+    this.handleCanvasStart(event);
+  }
+
+  onCanvasTouchStart(event: TouchEvent) {
+    event.preventDefault();
+    this.handleCanvasStart(event);
+  }
+
+  handleCanvasStart(event: MouseEvent | TouchEvent) {
+    const pos = this.getCanvasPosition(event);
+    const clickedDot = this.getDotAtPosition(pos.x, pos.y);
+    
+    // Start drawing from the correct next dot (currentDotIndex is 0-based, dots are 1-based)
+    if (clickedDot && clickedDot.number === this.currentDotIndex + 1) {
+      this.isDrawing = true;
+      this.startDot = clickedDot;
+      this.drawConnectDots();
+    }
+  }
+
+  onCanvasMouseMove(event: MouseEvent) {
+    if (this.isDrawing && this.startDot) {
+      const pos = this.getCanvasPosition(event);
+      
+      // Check if we're over the next correct dot
+      const endDot = this.getDotAtPosition(pos.x, pos.y);
+      if (endDot && endDot.number === this.startDot.number + 1) {
+        // Auto-connect to the next dot
+        this.lines.push({
+          start: { x: this.startDot.x, y: this.startDot.y },
+          end: { x: endDot.x, y: endDot.y }
+        });
+        
+        this.currentDotIndex = endDot.number - 1;
+        this.updateConnectDotsProgress();
+        
+        // Check if game is complete
+        if (this.currentDotIndex >= this.dots.length - 1) {
+          this.connectDotsProgress = 100;
+          this.onConnectDotsComplete();
+          this.isDrawing = false;
+          this.startDot = null;
+        } else {
+          // Continue from the connected dot
+          this.startDot = endDot;
+        }
+        
+        this.drawConnectDots();
+      } else {
+        // Draw temporary line from start dot to current position
+        this.drawConnectDots();
+        if (this.ctx) {
+          this.ctx.strokeStyle = '#ff6b35';
+          this.ctx.lineWidth = 3;
+          this.ctx.setLineDash([5, 5]);
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.startDot.x, this.startDot.y);
+          this.ctx.lineTo(pos.x, pos.y);
+          this.ctx.stroke();
+          this.ctx.setLineDash([]);
+        }
+      }
+    }
+  }
+
+  onCanvasTouchMove(event: TouchEvent) {
+    event.preventDefault();
+    if (this.isDrawing && this.startDot) {
+      const pos = this.getCanvasPosition(event);
+      
+      // Check if we're over the next correct dot
+      const endDot = this.getDotAtPosition(pos.x, pos.y);
+      if (endDot && endDot.number === this.startDot.number + 1) {
+        // Auto-connect to the next dot
+        this.lines.push({
+          start: { x: this.startDot.x, y: this.startDot.y },
+          end: { x: endDot.x, y: endDot.y }
+        });
+        
+        this.currentDotIndex = endDot.number - 1;
+        this.updateConnectDotsProgress();
+        
+        // Check if game is complete
+        if (this.currentDotIndex >= this.dots.length - 1) {
+          this.connectDotsProgress = 100;
+          this.onConnectDotsComplete();
+          this.isDrawing = false;
+          this.startDot = null;
+        } else {
+          // Continue from the connected dot
+          this.startDot = endDot;
+        }
+        
+        this.drawConnectDots();
+      } else {
+        // Draw temporary line from start dot to current position
+        this.drawConnectDots();
+        if (this.ctx) {
+          this.ctx.strokeStyle = '#ff6b35';
+          this.ctx.lineWidth = 3;
+          this.ctx.setLineDash([5, 5]);
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.startDot.x, this.startDot.y);
+          this.ctx.lineTo(pos.x, pos.y);
+          this.ctx.stroke();
+          this.ctx.setLineDash([]);
+        }
+      }
+    }
+  }
+
+  onCanvasMouseUp(event: MouseEvent) {
+    this.handleCanvasEnd(event);
+  }
+
+  onCanvasTouchEnd(event: TouchEvent) {
+    event.preventDefault();
+    this.handleCanvasEnd(event);
+  }
+
+  handleCanvasEnd(event: MouseEvent | TouchEvent) {
+    if (this.isDrawing && this.startDot) {
+      const pos = this.getCanvasPosition(event);
+      const endDot = this.getDotAtPosition(pos.x, pos.y);
+      
+      // Check if we're connecting to the next correct dot
+      if (endDot && endDot.number === this.startDot.number + 1) {
+        // Create a straight line between the dots
+        this.lines.push({
+          start: { x: this.startDot.x, y: this.startDot.y },
+          end: { x: endDot.x, y: endDot.y }
+        });
+        
+        this.currentDotIndex = endDot.number - 1; // Convert to 0-based index
+        this.updateConnectDotsProgress();
+        this.drawConnectDots();
+        
+        // Check if game is complete
+        if (this.currentDotIndex >= this.dots.length - 1) {
+          this.connectDotsProgress = 100;
+          this.onConnectDotsComplete();
+          this.isDrawing = false;
+          this.startDot = null;
+        } else {
+          // Continue drawing from the connected dot
+          this.startDot = endDot;
+          // Don't reset isDrawing - keep drawing continuously
+        }
+      } else {
+        // If not connecting to correct dot, stop drawing
+        this.isDrawing = false;
+        this.startDot = null;
+      }
+    }
+  }
+
+  getDotAtPosition(x: number, y: number) {
+    const threshold = 35; // Larger threshold for easier dot detection, especially for last dot
+    return this.dots.find(dot => 
+      Math.abs(dot.x - x) < threshold && Math.abs(dot.y - y) < threshold
+    );
+  }
+
+  updateConnectDotsProgress() {
+    // Fix: currentDotIndex is 0-based, so we need to add 1 to get the actual connected dots count
+    const connectedDots = this.currentDotIndex + 1;
+    this.connectDotsProgress = Math.round((connectedDots / this.dots.length) * 100);
+    
+    // Update activity progress
+    if (this.selectedActivity && this.selectedSubActivity) {
+      const activityKey = `${this.selectedActivity}_${this.selectedSubActivity.id}`;
+      this.activityProgress[activityKey] = this.connectDotsProgress;
+      localStorage.setItem(`progress_${activityKey}`, this.connectDotsProgress.toString());
+    }
+  }
+
+  onConnectDotsComplete() {
+    this.showCongratulations = true;
+    
+    if (this.selectedActivity && this.selectedSubActivity) {
+      const activityKey = `${this.selectedActivity}_${this.selectedSubActivity.id}`;
+      this.completedActivities.add(activityKey);
+    }
+    
+    setTimeout(() => {
+      this.showCongratulations = false;
+    }, 3000);
+  }
+
+  resetConnectDotsGame() {
+    this.currentDotIndex = 0;
+    this.connectDotsProgress = 0;
+    this.lines = [];
+    this.startDot = null;
+    this.isDrawing = false;
+    this.drawConnectDots();
+    this.updateConnectDotsProgress();
+  }
+
+  // Maze Game Methods
+  initMazeGame() {
+    if (!this.mazeCanvas) return;
+    
+    this.mazeCanvasElement = this.mazeCanvas.nativeElement;
+    this.mazeCtx = this.mazeCanvasElement.getContext('2d');
+    
+    if (!this.mazeCtx) return;
+    
+    this.mazePath = [];
+    this.mazeCompletedPaths = [];
+    this.mazeProgress = 0;
+    this.isDrawingMaze = false;
+    this.drawMaze();
+  }
+
+  drawMaze() {
+    if (!this.mazeCtx || !this.mazeCanvasElement) return;
+    
+    this.mazeCtx.clearRect(0, 0, this.mazeCanvasElement.width, this.mazeCanvasElement.height);
+    
+    // Draw maze walls
+    this.mazeCtx.strokeStyle = '#333';
+    this.mazeCtx.lineWidth = 2;
+    this.mazeCtx.beginPath();
+    
+    // Simple maze pattern
+    this.mazeCtx.moveTo(20, 20);
+    this.mazeCtx.lineTo(280, 20);
+    this.mazeCtx.lineTo(280, 180);
+    this.mazeCtx.lineTo(20, 180);
+    this.mazeCtx.lineTo(20, 20);
+    
+    // Internal walls
+    this.mazeCtx.moveTo(80, 20);
+    this.mazeCtx.lineTo(80, 100);
+    this.mazeCtx.moveTo(200, 20);
+    this.mazeCtx.lineTo(200, 100);
+    this.mazeCtx.moveTo(80, 100);
+    this.mazeCtx.lineTo(200, 100);
+    
+    this.mazeCtx.stroke();
+    
+    // Draw start and end points
+    this.mazeCtx.fillStyle = '#4CAF50';
+    this.mazeCtx.beginPath();
+    this.mazeCtx.arc(30, 30, 8, 0, 2 * Math.PI);
+    this.mazeCtx.fill();
+    
+    this.mazeCtx.fillStyle = '#F44336';
+    this.mazeCtx.beginPath();
+    this.mazeCtx.arc(270, 170, 8, 0, 2 * Math.PI);
+    this.mazeCtx.fill();
+    
+    // Draw all previous paths (preserved exactly as drawn)
+    this.mazeCompletedPaths.forEach(path => {
+      if (path.length > 1) {
+        this.mazeCtx!.strokeStyle = '#2196F3';
+        this.mazeCtx!.lineWidth = 3;
+        this.mazeCtx!.beginPath();
+        this.mazeCtx!.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) {
+          this.mazeCtx!.lineTo(path[i].x, path[i].y);
+        }
+        this.mazeCtx!.stroke();
+      }
+    });
+    
+    // Draw current path being drawn
+    if (this.mazePath.length > 1) {
+      this.mazeCtx.strokeStyle = '#FF9800';
+      this.mazeCtx.lineWidth = 3;
+      this.mazeCtx.beginPath();
+      this.mazeCtx.moveTo(this.mazePath[0].x, this.mazePath[0].y);
+      for (let i = 1; i < this.mazePath.length; i++) {
+        this.mazeCtx.lineTo(this.mazePath[i].x, this.mazePath[i].y);
+      }
+      this.mazeCtx.stroke();
+    }
+  }
+
+  onMazeMouseDown(event: MouseEvent) {
+    this.handleMazeStart(event);
+  }
+
+  onMazeTouchStart(event: TouchEvent) {
+    event.preventDefault();
+    this.handleMazeStart(event);
+  }
+
+  handleMazeStart(event: MouseEvent | TouchEvent) {
+    const pos = this.getMazeCanvasPosition(event);
+    
+    // Check if starting from the start circle (green circle) OR from an existing line
+    const distanceFromStart = Math.sqrt(
+      Math.pow(pos.x - this.mazeStartPosition.x, 2) + 
+      Math.pow(pos.y - this.mazeStartPosition.y, 2)
+    );
+    
+    // Check if touching any existing line (within 20 pixels)
+    let touchingExistingLine = false;
+    this.mazeCompletedPaths.forEach(path => {
+      for (let i = 0; i < path.length; i++) {
+        const distance = Math.sqrt(
+          Math.pow(pos.x - path[i].x, 2) + 
+          Math.pow(pos.y - path[i].y, 2)
+        );
+        if (distance <= 20) {
+          touchingExistingLine = true;
+          break;
+        }
+      }
+    });
+    
+    if (distanceFromStart <= 15 || touchingExistingLine) {
+      this.mazePath = [pos];
+      this.isDrawingMaze = true;
+      this.updateMazeProgress();
+      this.drawMaze();
+    }
+  }
+
+  onMazeMouseMove(event: MouseEvent) {
+    if (this.isDrawingMaze) {
+      this.handleMazeMove(event);
+    }
+  }
+
+  onMazeTouchMove(event: TouchEvent) {
+    event.preventDefault();
+    if (this.isDrawingMaze) {
+      this.handleMazeMove(event);
+    }
+  }
+
+  handleMazeMove(event: MouseEvent | TouchEvent) {
+    if (!this.isDrawingMaze) return;
+    
+    const pos = this.getMazeCanvasPosition(event);
+    
+    // Check if the new position is close to the last point in the path (continuous drawing)
+    if (this.mazePath.length > 0) {
+      const lastPoint = this.mazePath[this.mazePath.length - 1];
+      const distance = Math.sqrt(
+        Math.pow(pos.x - lastPoint.x, 2) + 
+        Math.pow(pos.y - lastPoint.y, 2)
+      );
+      
+      // Only add point if it's close enough (continuous drawing)
+      if (distance <= 20) {
+        this.mazePath.push(pos);
+        this.drawMaze();
+        this.updateMazeProgress();
+        
+        // Check if reached the end
+        if (Math.abs(pos.x - this.mazeEndPosition.x) < 15 && Math.abs(pos.y - this.mazeEndPosition.y) < 15) {
+          this.mazeProgress = 100;
+          this.onMazeComplete();
+        }
+      }
+    }
+  }
+
+  onMazeMouseUp(event: MouseEvent) {
+    this.handleMazeEnd();
+  }
+
+  onMazeTouchEnd(event: TouchEvent) {
+    event.preventDefault();
+    this.handleMazeEnd();
+  }
+
+  handleMazeEnd() {
+    if (this.isDrawingMaze && this.mazePath.length > 1) {
+      // Save the complete path exactly as drawn
+      this.mazeCompletedPaths.push([...this.mazePath]);
+      
+      // Reset current path
+      this.mazePath = [];
+      this.isDrawingMaze = false;
+      this.drawMaze();
+    }
+  }
+
+  getMazeCanvasPosition(event: MouseEvent | TouchEvent): { x: number, y: number } {
+    if (!this.mazeCanvasElement) return { x: 0, y: 0 };
+    
+    const rect = this.mazeCanvasElement.getBoundingClientRect();
+    let clientX: number, clientY: number;
+    
+    if ('touches' in event) {
+      // For touch events, use touches[0] if available, otherwise use changedTouches[0]
+      if (event.touches && event.touches.length > 0) {
+        clientX = event.touches[0].clientX;
+        clientY = event.touches[0].clientY;
+      } else if (event.changedTouches && event.changedTouches.length > 0) {
+        clientX = event.changedTouches[0].clientX;
+        clientY = event.changedTouches[0].clientY;
+      } else {
+        return { x: 0, y: 0 };
+      }
+    } else {
+      clientX = event.clientX;
+      clientY = event.clientY;
+    }
+    
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  updateMazeProgress() {
+    // Calculate progress based on path length and complexity
+    const maxPathLength = 200;
+    this.mazeProgress = Math.min(Math.round((this.mazePath.length / maxPathLength) * 100), 99);
+    
+    // Update activity progress
+    if (this.selectedActivity && this.selectedSubActivity) {
+      const activityKey = `${this.selectedActivity}_${this.selectedSubActivity.id}`;
+      this.activityProgress[activityKey] = this.mazeProgress;
+      localStorage.setItem(`progress_${activityKey}`, this.mazeProgress.toString());
+    }
+  }
+
+  onMazeComplete() {
+    this.showCongratulations = true;
+    
+    if (this.selectedActivity && this.selectedSubActivity) {
+      const activityKey = `${this.selectedActivity}_${this.selectedSubActivity.id}`;
+      this.completedActivities.add(activityKey);
+    }
+    
+    setTimeout(() => {
+      this.showCongratulations = false;
+    }, 3000);
+  }
+
+  resetMazeGame() {
+    this.mazePath = [];
+    this.mazeCompletedPaths = [];
+    this.mazeProgress = 0;
+    this.isDrawingMaze = false;
+    this.drawMaze();
+    this.updateMazeProgress();
   }
 }
 

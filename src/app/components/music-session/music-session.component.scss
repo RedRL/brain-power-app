@@ -1,7 +1,7 @@
 /* Compact Music Session Player Styles */
 
 .content {
-  padding: 16px 16px 60px;
+  padding: 16px 16px 90px;
   max-width: 600px;
   margin: 0 auto;
   position: relative;
@@ -622,6 +622,92 @@
   box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
 }
 
+/* Connect Dots Game */
+.connect-dots-game {
+  padding: 20px;
+  background: transparent;
+  margin: 20px;
+}
+
+.game-instructions {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.game-instructions h3 {
+  color: #fff;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+.game-instructions p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10px;
+}
+
+.progress-info {
+  color: #ff6b35;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.connect-dots-canvas {
+  border: 2px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.game-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.reset-btn {
+  background: #ff6b35;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reset-btn:hover {
+  background: #e55a2b;
+}
+
+/* Maze Game */
+.maze-game {
+  padding: 20px;
+  background: transparent;
+  margin: 20px;
+}
+
+.maze-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.maze-canvas {
+  border: 2px solid #333;
+  border-radius: 8px;
+  cursor: crosshair;
+}
+
 /* Congratulations Overlay */
 .congratulations-overlay {
   position: fixed;
@@ -923,7 +1009,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .content {
-    padding: 16px 16px 60px;
+    padding: 16px 16px 90px;
     flex-direction: column;
     gap: 24px;
   }

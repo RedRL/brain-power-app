@@ -2,7 +2,7 @@
 
 <!-- Video Background -->
 <div class="video-background">
-  <video 
+      <video 
     #backgroundVideo
     class="background-video"
     autoplay
@@ -17,11 +17,11 @@
 <!-- Hidden Audio Element -->
 <audio 
   #audioPlayer
-  (timeupdate)="onTimeUpdate()"
+        (timeupdate)="onTimeUpdate()"
   (loadedmetadata)="onAudioLoaded()"
   (ended)="onTrackEnded()"
-  (play)="onPlay()"
-  (pause)="onPause()"
+        (play)="onPlay()"
+        (pause)="onPause()"
   [src]="currentTrack?.url">
 </audio>
 
@@ -30,7 +30,58 @@
   <div class="activity-section">
     <!-- Show text content if selected -->
     <div class="full-text-display" *ngIf="showFullText">
-      <div class="full-text-display-content" #textContent (scroll)="onTextScroll($event)">
+      <!-- Connect Dots Game -->
+      <div class="connect-dots-game" *ngIf="selectedSubActivity?.id === 'connect_dots'">
+        <div class="game-instructions">
+          <p>{{'connect_dots_instructions'|t}}</p>
+        </div>
+        <div class="canvas-container">
+          <canvas #connectDotsCanvas 
+                  class="connect-dots-canvas"
+                  width="300" 
+                  height="200"
+                  (mousedown)="onCanvasMouseDown($event)"
+                  (touchstart)="onCanvasTouchStart($event)"
+                  (mousemove)="onCanvasMouseMove($event)"
+                  (touchmove)="onCanvasTouchMove($event)"
+                  (mouseup)="onCanvasMouseUp($event)"
+                  (touchend)="onCanvasTouchEnd($event)">
+          </canvas>
+        </div>
+        <div class="game-controls">
+          <button class="reset-btn" (click)="resetConnectDotsGame()">{{'reset_game'|t}}</button>
+        </div>
+    </div>
+    
+      <!-- Maze Game -->
+      <div class="maze-game" *ngIf="selectedSubActivity?.id === 'solve_maze'">
+        <div class="game-instructions">
+          <h3>{{'solve_maze'|t}}</h3>
+          <p>{{'maze_instructions'|t}}</p>
+        </div>
+        <div class="maze-container">
+          <canvas #mazeCanvas 
+                  class="maze-canvas"
+                  width="300" 
+                  height="200"
+                  (mousedown)="onMazeMouseDown($event)"
+                  (touchstart)="onMazeTouchStart($event)"
+                  (mousemove)="onMazeMouseMove($event)"
+                  (touchmove)="onMazeTouchMove($event)"
+                  (mouseup)="onMazeMouseUp($event)"
+                  (touchend)="onMazeTouchEnd($event)">
+          </canvas>
+        </div>
+        <div class="game-controls">
+          <button class="reset-btn" (click)="resetMazeGame()">{{'reset_game'|t}}</button>
+        </div>
+      </div>
+      
+      <!-- Regular text content for other activities -->
+      <div class="full-text-display-content" 
+           *ngIf="selectedSubActivity?.id !== 'connect_dots' && selectedSubActivity?.id !== 'solve_maze'"
+           #textContent 
+           (scroll)="onTextScroll($event)">
         <p>{{ getActivityText() }}</p>
       </div>
     </div>
@@ -95,8 +146,8 @@
 
   <!-- Music Player Container (includes progress bar and player) -->
   <div class="music-player-container">
-    <!-- Reading Progress Bar (only shown when reading) -->
-    <div class="reading-progress-container" *ngIf="showFullText">
+    <!-- Reading Progress Bar (only shown when reading, not games) -->
+    <div class="reading-progress-container" *ngIf="showFullText && selectedSubActivity?.id !== 'connect_dots' && selectedSubActivity?.id !== 'solve_maze'">
       <div class="reading-progress-label">{{'reading_progress'|t}}: {{readingProgress}}%</div>
       <div class="reading-progress-bar">
         <div class="reading-progress-fill" [style.width.%]="readingProgress"></div>
@@ -190,9 +241,9 @@
           </svg>
         </button>
       </ng-container>
-    </div>
-
   </div>
+  
+    </div>
   </div>
 
   <!-- Congratulations Message -->

@@ -203,10 +203,16 @@ const en: Dict = {
   study_material: 'Study Material',
   work_slides: 'Work Slides',
   lecture_notes: 'Lecture Notes',
+  // Writing sub-activities
+  connect_dots: 'Connect the Dots',
+  solve_maze: 'Solve a Maze',
   // Objects sub-activities
   puzzle: 'Puzzle',
-  spot_differences: 'Spot Differences',
-  pattern_recognition: 'Pattern Recognition',
+  // Game instructions
+  connect_dots_instructions: 'Draw lines between the dots in numerical order to complete the drawing',
+  maze_instructions: 'Draw a path from the green start point to the red end point',
+  progress: 'Progress',
+  reset_game: 'Reset Game',
   // Sample texts for activities
   reading_novel_text: `Chapter 1: The Beginning
 
@@ -1337,41 +1343,66 @@ Remember: It's never too late to start these practices. The brain retains its ca
 Conclusion:
 Cognitive aging is a normal process, but there's much we can do to maintain and even improve our cognitive function as we age. The key is staying engaged, active, and curious about the world around us.`,
   
-  objects_puzzle_text: `Classic Jigsaw Puzzle Exercise
+  objects_connect_dots_text: `Connect the Dots Drawing Exercise
 
-Imagine before you a beautiful 500-piece jigsaw puzzle. The image, once complete, will reveal a serene garden scene with colorful flowers, a stone pathway, and a gentle fountain in the center. But right now, all you see are scattered pieces.
+Before you lies a grid of numbered dots, scattered across the page like stars in a constellation. Your task is to connect them in numerical order to reveal a hidden drawing.
 
-Starting a puzzle requires strategy. Most people begin with the border - finding all the edge pieces and connecting them to create a frame. This gives you a sense of the puzzle's scope and provides a structure to work within.
+Start with dot number 1. From there, draw a line to dot number 2, then to dot number 3, and so on. Each connection brings you closer to revealing the complete picture.
 
-As you sort through the pieces, you notice patterns:
-- Pieces with lots of blue might be part of the sky
-- Green pieces could be foliage or grass
-- Bright colors likely belong to the flower beds
-- Gray pieces might form the stone pathway
+As you progress through the dots, you'll begin to see patterns emerging:
+- Some sections might form curves and flowing lines
+- Other areas might create sharp angles and geometric shapes
+- The overall form starts to take shape as you connect more points
 
-The process of completing a puzzle engages multiple cognitive functions simultaneously:
+The cognitive benefits of connect-the-dots activities include:
 
-Visual Processing: You must recognize shapes, colors, and patterns. Your brain is constantly comparing the piece in your hand with the image on the box and with the gaps in your partially completed puzzle.
+Visual-Motor Coordination: Your hand and eye must work together precisely to draw lines from one dot to the next.
 
-Spatial Reasoning: Understanding how pieces fit together in three-dimensional space. Each piece has a specific orientation and location where it belongs.
+Sequential Processing: Following numerical order requires you to process information in sequence, which strengthens your working memory.
 
-Problem-Solving: Developing strategies for finding pieces, testing hypotheses about where pieces might go, and adjusting your approach when needed.
+Spatial Awareness: Understanding the relationship between dots in two-dimensional space and how they connect to form a larger image.
 
-Memory: Remembering where you saw certain types of pieces, recalling the overall image you're trying to create, and keeping track of which sections you've completed.
+Pattern Recognition: As you connect more dots, your brain begins to recognize the emerging pattern and can predict where the next lines might lead.
 
-Attention: Maintaining focus on the task, sometimes for extended periods. This sustained attention is excellent exercise for the brain.
+Attention to Detail: Each dot must be connected precisely, requiring careful attention to both the numbers and the positioning of each point.
 
-As you work on the puzzle, you enter a state of flow - fully immersed in the activity, time seems to pass differently. This meditative quality is part of what makes puzzles so satisfying and beneficial.
+Problem-Solving: When you encounter challenging sections with many dots close together, you must carefully trace your path to avoid crossing lines or missing connections.
 
-Piece by piece, the image comes together. The flower bed takes shape, the pathway emerges, the fountain begins to form. Each small success - finding the right piece, completing a section - provides a sense of accomplishment and motivates you to continue.
+The satisfaction comes from watching the hidden image gradually emerge from the chaos of scattered dots. What starts as a random collection of points transforms into a recognizable form through your systematic approach.
 
-This is problem-solving at its most tangible. Unlike many real-world problems that are complex and ambiguous, a puzzle has a clear solution. Every piece has its place. This certainty is comforting and satisfying.
+As you complete the final connections, the full picture is revealed - perhaps a graceful swan, a majestic castle, or a beautiful flower. The transformation from abstract dots to concrete image represents the power of following a structured approach to achieve a clear goal.`,
+  
+  objects_solve_maze_text: `Maze Solving Challenge
 
-The cognitive benefits of puzzle-solving are well-documented. Regular puzzle work can improve visual-spatial reasoning, short-term memory, and problem-solving abilities. It's a gentle yet effective form of brain exercise.
+Before you lies an intricate maze - a labyrinth of twisting paths, dead ends, and hidden passages. Your goal is to find the path from the entrance to the exit, navigating through the complex network of corridors and avoiding the many false trails that lead nowhere.
 
-And there's something deeply satisfying about the tactile nature of physical puzzles - holding the pieces, turning them to test fit, hearing the soft click as a piece slides into its proper place.
+This maze presents a classic problem-solving challenge that engages multiple cognitive skills simultaneously. As you begin your journey, you'll need to employ various strategies to reach your destination.
 
-As you place the final piece, completing the image, you feel a sense of achievement. The scattered chaos has been transformed into a coherent, beautiful whole through your effort, patience, and skill.`,
+Starting at the entrance, you face your first choice: multiple paths branch out before you. Some lead upward, others downward, some curve to the left while others wind to the right. Which path will lead you closer to the exit?
+
+The cognitive processes involved in maze-solving include:
+
+Spatial Reasoning: Understanding your position within the maze and how different paths relate to each other in two-dimensional space.
+
+Memory: Remembering which paths you've already explored to avoid retracing your steps and getting lost in endless loops.
+
+Planning: Developing strategies for systematic exploration, such as always turning right at intersections or marking your path as you go.
+
+Problem-Solving: When you reach a dead end, you must backtrack and try alternative routes, learning from your mistakes and adjusting your approach.
+
+Visual Processing: Tracking the maze walls and passages, distinguishing between viable paths and blocked routes.
+
+Attention and Focus: Maintaining concentration as you navigate through the complex network, especially when the maze becomes more challenging with multiple similar-looking passages.
+
+As you progress through the maze, you'll encounter various challenges:
+- Forking paths that require you to make strategic decisions
+- Circular routes that lead back to previously visited areas
+- Narrow passages that require careful navigation
+- Complex intersections with multiple options
+
+The key to successful maze-solving is persistence and systematic exploration. Each dead end teaches you something about the maze's structure. Each successful turn brings you closer to understanding the overall layout.
+
+When you finally reach the exit, you'll have experienced the satisfaction of solving a complex spatial puzzle through careful analysis, strategic thinking, and determined effort. The maze that once seemed impossible to navigate has been conquered through your cognitive skills and perseverance.`,
   
   objects_memory_game_text: `Memory Matching Card Game
 
@@ -1820,10 +1851,16 @@ const he: Dict = {
   study_material: 'חומר לימוד',
   work_slides: 'שקופיות עבודה',
   lecture_notes: 'הרצאות',
+  // Writing sub-activities
+  connect_dots: 'חבר את הנקודות',
+  solve_maze: 'פתור מבוך',
   // Objects sub-activities
   puzzle: 'פאזל',
-  spot_differences: 'מצא הבדלים',
-  pattern_recognition: 'זיהוי דפוסים',
+  // Game instructions
+  connect_dots_instructions: 'העבירו קו בין כל הנקודות כדי להשלים את הציור',
+  maze_instructions: 'צייר נתיב מנקודת ההתחלה הירוקה לנקודת הסיום האדומה',
+  progress: 'התקדמות',
+  reset_game: 'איפוס משחק',
   // Song name translations
   song_1: 'אוויר',
   song_2: 'סונטת ירח - תנועה שלישית',
@@ -2268,7 +2305,68 @@ const he: Dict = {
 אז אני אקרא ואני אכתוב,
 אשתף את המילים שלי, אביא לאור,
 את המחשבות והרגשות שבנשמתי,
-ובשיתוף הזה, אהפוך לשלם.
+ובשיתוף הזה, אהפוך לשלם.`,
+  
+  objects_connect_dots_text: `תרגיל חיבור נקודות
+
+לפניך רשת של נקודות ממוספרות, מפוזרות על הדף כמו כוכבים במערכת כוכבים. המשימה שלך היא לחבר אותן בסדר מספרי כדי לחשוף ציור נסתר.
+
+התחל בנקודה מספר 1. משם, צייר קו לנקודה מספר 2, ואז לנקודה מספר 3, וכן הלאה. כל חיבור מביא אותך קרוב יותר לחשיפת התמונה השלמה.
+
+כשאתה מתקדם דרך הנקודות, תתחיל לראות דפוסים מתפתחים:
+- חלקים מסוימים עלולים ליצור עקומות וקווים זורמים
+- אזורים אחרים עלולים ליצור זוויות חדות וצורות גיאומטריות
+- הצורה הכללית מתחילה להתגבש כשאתה מחבר יותר נקודות
+
+היתרונות הקוגניטיביים של פעילויות חיבור נקודות כוללים:
+
+תיאום חזותי-מוטורי: היד והעין שלך חייבות לעבוד יחד בדיוק כדי לצייר קווים מנקודה אחת לאחרת.
+
+עיבוד רצפי: מעקב אחר סדר מספרי דורש ממך לעבד מידע ברצף, מה שמחזק את הזיכרון הפעיל שלך.
+
+מודעות מרחבית: הבנת הקשר בין הנקודות במרחב דו-ממדי ואיך הן מתחברות ליצור תמונה גדולה יותר.
+
+זיהוי דפוסים: כשאתה מחבר יותר נקודות, המוח שלך מתחיל לזהות את הדפוס המתפתח ויכול לחזות לאן הקווים הבאים עלולים להוביל.
+
+תשומת לב לפרטים: כל נקודה חייבת להיות מחוברת בדיוק, מה שדורש תשומת לב זהירה גם למספרים וגם למיקום של כל נקודה.
+
+פתרון בעיות: כשאתה נתקל בחלקים מאתגרים עם הרבה נקודות קרובות זו לזו, אתה חייב לעקוב בזהירות אחר הנתיב שלך כדי להימנע מקרישת קווים או החמצת חיבורים.
+
+הסיפוק מגיע מצפייה בתמונה הנסתרת מתגלה בהדרגה מהכאוס של הנקודות המפוזרות. מה שמתחיל כאוסף אקראי של נקודות הופך לצורה מוכרת דרך הגישה השיטתית שלך.
+
+כשאתה משלים את החיבורים הסופיים, התמונה השלמה נחשפת - אולי ברבור אלגנטי, טירה מפוארת, או פרח יפה. השינוי מנקודות מופשטות לתמונה קונקרטית מייצג את הכוח של מעקב אחר גישה מובנית כדי להשיג מטרה ברורה.`,
+  
+  objects_solve_maze_text: `אתגר פתרון מבוך
+
+לפניך מבוך מורכב - מבוך של נתיבים מתפתלים, נתיבים ללא מוצא, ומעברים נסתרים. המטרה שלך היא למצוא את הנתיב מהכניסה ליציאה, לנווט דרך הרשת המורכבת של המסדרונות ולהימנע מהרבה שבילים כוזבים שמובילים לשום מקום.
+
+המבוך הזה מציג אתגר פתרון בעיות קלאסי שמערב מספר כישורים קוגניטיביים בו-זמנית. כשאתה מתחיל את המסע שלך, תצטרך להשתמש באסטרטגיות שונות כדי להגיע ליעד שלך.
+
+מתחיל בכניסה, אתה עומד בפני הבחירה הראשונה שלך: מספר נתיבים מתפצלים לפניך. חלקם מובילים למעלה, אחרים למטה, חלקם מתעקלים שמאלה בעוד שאחרים מתפתלים ימינה. איזה נתיב יוביל אותך קרוב יותר ליציאה?
+
+התהליכים הקוגניטיביים המעורבים בפתרון מבוכים כוללים:
+
+הנמקה מרחבית: הבנת המיקום שלך בתוך המבוך ואיך נתיבים שונים מתייחסים זה לזה במרחב דו-ממדי.
+
+זיכרון: זכירה של אילו נתיבים כבר חקרת כדי להימנע מלחזור על הצעדים שלך ולהתבלבל בלולאות אינסופיות.
+
+תכנון: פיתוח אסטרטגיות לחקירה שיטתית, כמו תמיד לפנות ימינה בצמתים או לסמן את הנתיב שלך ככל שאתה הולך.
+
+פתרון בעיות: כשאתה מגיע לנתיב ללא מוצא, אתה חייב לחזור אחורה ולנסות נתיבים חלופיים, ללמוד מהטעויות שלך ולהתאים את הגישה שלך.
+
+עיבוד חזותי: מעקב אחר קירות המבוך ומעברים, הבחנה בין נתיבים אפשריים לנתיבים חסומים.
+
+תשומת לב ומיקוד: שמירה על ריכוז כשאתה נווט דרך הרשת המורכבת, במיוחד כשהמבוך הופך מאתגר יותר עם מעברים מרובים דומים.
+
+כשאתה מתקדם דרך המבוך, תתקל באתגרים שונים:
+- נתיבים מתפצלים שדורשים ממך לקבל החלטות אסטרטגיות
+- נתיבים מעגליים שמובילים חזרה לאזורים שכבר ביקרת בהם
+- מעברים צרים שדורשים ניווט זהיר
+- צמתים מורכבים עם אפשרויות מרובות
+
+המפתח לפתרון מבוך מוצלח הוא התמדה וחקירה שיטתית. כל נתיב ללא מוצא מלמד אותך משהו על מבנה המבוך. כל פנייה מוצלחת מביאה אותך קרוב יותר להבנת הפריסה הכללית.
+
+כשאתה סוף סוף מגיע ליציאה, תהיה חווה את הסיפוק של פתרון חידה מרחבית מורכבת דרך ניתוח זהיר, חשיבה אסטרטגית ומאמץ נחוש. המבוך שנראה פעם בלתי אפשרי לנווט בו נכבש דרך הכישורים הקוגניטיביים שלך וההתמדה.
 
 ---
 
