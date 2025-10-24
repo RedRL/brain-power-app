@@ -17,7 +17,7 @@ export class LetsBeginComponent implements OnInit {
   selectedLevel: 'beginner' | 'advanced' | 'grand' = 'beginner';
   exercises: Exercise[] = [];
   completedToday: number = 0;
-  totalExercises: number = 2;
+  totalExercises: number = 4;
   todayProgress: number = 0;
   isMusicSessionCompleted: boolean = false;
 
@@ -50,23 +50,29 @@ export class LetsBeginComponent implements OnInit {
 
   startExercise(exercise: Exercise) {
     if (exercise.id === 'breathing') {
-      this.startBreathingExercise(exercise);
+      this.startBreathingExercise();
     } else if (exercise.id === 'memory') {
-      this.startMemoryGame(exercise);
+      this.startGame();
     }
   }
 
-  startBreathingExercise(exercise: Exercise) {
+  startBreathingExercise() {
     // Navigate to breathing options component
     this.router.navigate(['/breathing-options'], { 
       queryParams: { 
-        duration: exercise.duration,
+        duration: 5,
         level: this.selectedLevel 
       } 
     });
   }
 
-  startMemoryGame(exercise: Exercise) {
+  startFeldenkraisExercise() {
+    // Navigate to Feldenkrais movement component (placeholder for now)
+    console.log('Starting Feldenkrais Movement Exercise');
+    // TODO: Implement Feldenkrais movement component navigation
+  }
+
+  startGame() {
     // Navigate to memory game component
     this.router.navigate(['/memory-game'], { 
       queryParams: { 

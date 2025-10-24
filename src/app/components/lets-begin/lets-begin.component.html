@@ -1,34 +1,63 @@
 ﻿<app-header [title]="'lets_begin'|t"></app-header>
 
 <section class="content">
+  <h3>{{'todays_activities'|t}}</h3>
+  
+  <div class="progress-bar">
+    <div class="progress-bar__fill" [style.width.%]="todayProgress * 100"></div>
+  </div>
+  <div class="muted">{{ completedToday }} {{'exercises_completed'|t}} מתוך {{ totalExercises }}</div>
+
   <!-- Music Session Box -->
-  <div class="music-session-box" [class.completed]="isMusicSessionCompleted">
-    <div class="music-header">
+  <div class="activity-box activity-box--1" [class.completed]="isMusicSessionCompleted">
+    <div class="activity-header">
       <span class="icon">{{ isMusicSessionCompleted ? 'check_circle' : 'music_note' }}</span>
       <h3>{{'music_session'|t}}</h3>
     </div>
     <p>{{'music_session_description'|t}}</p>
-    <button class="btn-music" [class.btn-music-completed]="isMusicSessionCompleted" (click)="startMusicSession()">
+    <button class="btn-activity" [class.btn-activity-completed]="isMusicSessionCompleted" (click)="startMusicSession()">
       <span class="icon">{{ isMusicSessionCompleted ? 'refresh' : 'play_arrow' }}</span>
       {{ isMusicSessionCompleted ? ('retake_music_session'|t) : ('start_music_session'|t) }}
     </button>
   </div>
 
-  <h3>{{'todays_activities'|t}}</h3>
-  <div class="card" *ngFor="let exercise of exercises">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div>
-        <strong>{{ exercise.title }}</strong>
-        <div>{{ exercise.description }}</div>
-      </div>
-      <div>{{ exercise.duration }} {{'minutes'|t}}</div>
+  <!-- Breathing Exercise Box -->
+  <div class="activity-box activity-box--2">
+    <div class="activity-header">
+      <span class="icon">air</span>
+      <h3>{{'breathing_exercise'|t}}</h3>
     </div>
-    <button class="btn-primary" (click)="startExercise(exercise)">{{'start_exercise'|t}} {{ exercise.title }}</button>
+    <p>{{'exercise_breathing_description'|t}}</p>
+    <button class="btn-activity" (click)="startBreathingExercise()">
+      <span class="icon">play_arrow</span>
+      התחילו {{'breathing_exercise'|t}}
+    </button>
   </div>
 
-  <h3>{{'todays_progress'|t}}</h3>
-  <div class="progress-bar">
-    <div class="progress-bar__fill" [style.width.%]="todayProgress * 100"></div>
+  <!-- Feldenkrais Movement Box -->
+  <div class="activity-box activity-box--3">
+    <div class="activity-header">
+      <span class="icon">accessibility_new</span>
+      <h3>{{'feldenkrais_movement'|t}}</h3>
+    </div>
+    <p>{{'feldenkrais_description'|t}}</p>
+    <button class="btn-activity" (click)="startFeldenkraisExercise()">
+      <span class="icon">play_arrow</span>
+      התחילו {{'feldenkrais_movement'|t}}
+    </button>
   </div>
-  <div class="muted">{{ completedToday }} {{'exercises_completed'|t}} {{ totalExercises }}</div>
+
+  <!-- Game Box -->
+  <div class="activity-box activity-box--4">
+    <div class="activity-header">
+      <span class="icon">psychology</span>
+      <h3>{{'game'|t}}</h3>
+    </div>
+    <p>{{'game_description'|t}}</p>
+    <button class="btn-activity" (click)="startGame()">
+      <span class="icon">play_arrow</span>
+      התחילו {{'game'|t}}
+    </button>
+  </div>
+
 </section>
