@@ -6,7 +6,7 @@
   <div class="progress-bar">
     <div class="progress-bar__fill" [style.width.%]="todayProgress * 100"></div>
   </div>
-  <div class="muted">{{ completedToday }} {{'exercises_completed'|t}} מתוך {{ totalExercises }}</div>
+  <div class="muted">{{ completedToday }} {{'exercises_completed'|t}} {{'out_of'|t}} {{ totalExercises }}</div>
 
   <!-- Music Session Box -->
   <div class="activity-box activity-box--1" [class.completed]="isMusicSessionCompleted">
@@ -30,7 +30,7 @@
     <p>{{'exercise_breathing_description'|t}}</p>
     <button class="btn-activity" (click)="startBreathingExercise()">
       <span class="icon">play_arrow</span>
-      התחילו {{'breathing_exercise'|t}}
+      {{'start_breathing_exercise'|t}}
     </button>
   </div>
 
@@ -43,7 +43,7 @@
     <p>{{'feldenkrais_description'|t}}</p>
     <button class="btn-activity" (click)="startFeldenkraisExercise()">
       <span class="icon">play_arrow</span>
-      התחילו {{'feldenkrais_movement'|t}}
+      {{'start_feldenkrais_exercise'|t}}
     </button>
   </div>
 
@@ -56,7 +56,7 @@
     <p>{{'game_description'|t}}</p>
     <button class="btn-activity" (click)="startGame()">
       <span class="icon">play_arrow</span>
-      התחילו {{'game'|t}}
+      {{'start_game'|t}}
     </button>
   </div>
 

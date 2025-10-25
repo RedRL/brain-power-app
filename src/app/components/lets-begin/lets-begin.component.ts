@@ -67,9 +67,12 @@ export class LetsBeginComponent implements OnInit {
   }
 
   startFeldenkraisExercise() {
-    // Navigate to Feldenkrais movement component (placeholder for now)
-    console.log('Starting Feldenkrais Movement Exercise');
-    // TODO: Implement Feldenkrais movement component navigation
+    // Navigate to Feldenkrais options component
+    this.router.navigate(['/feldenkrais-options'], { 
+      queryParams: { 
+        level: this.selectedLevel 
+      } 
+    });
   }
 
   startGame() {
