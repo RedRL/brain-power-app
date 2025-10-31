@@ -1,0 +1,78 @@
+<app-header [title]="'feldenkrais_movement'|t"></app-header>
+
+<section class="content">
+  <div class="video-wrapper" #videoContainer>
+    <!-- Progress Bar (overlay at top of video) -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <div class="progress-text">
+        <span>{{'video_progress'|t}}: {{progressPercentage | number:'1.0-0'}}%</span>
+      </div>
+    </div>
+
+    <div class="video-frame">
+      <!-- Feldenkrais Video -->
+      <video 
+        #feldenkraisVideo
+        class="feldenkrais-video"
+        [src]="videoUrl"
+        (timeupdate)="onTimeUpdate()"
+        (loadedmetadata)="onVideoLoaded()"
+        (play)="onPlay()"
+        (pause)="onPause()"
+        (error)="onVideoError($event)"
+        crossorigin="anonymous">
+        <p>{{'video_not_supported'|t}}</p>
+      </video>
+    </div>
+    
+    <!-- Custom Video Controls (overlay at bottom of video) -->
+    <div class="custom-controls" [class.rtl]="translateService.lang === 'he'">
+      <!-- Rewind 5 seconds - Left -->
+      <div class="control-wrapper rewind-wrapper">
+        <button class="control-btn" (click)="rewind5Seconds()" aria-label="Rewind 5 seconds">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V1L7 6L12 11V7C15.31 7 18 9.69 18 13C18 16.31 15.31 19 12 19C8.69 19 6 16.31 6 13H4C4 17.42 7.58 21 12 21C16.42 21 20 17.42 20 13C20 8.58 16.42 5 12 5Z" fill="currentColor" />
+            <text x="12" y="16" text-anchor="middle" font-size="9" fill="currentColor" font-weight="bold">5</text>
+          </svg>
+        </button>
+        <div class="tooltip tooltip-left">
+          <div class="tooltip-arrow"></div>
+          <span>{{'rewind_5_seconds'|t}}</span>
+        </div>
+      </div>
+      
+      <!-- Play/Pause - Center -->
+      <div class="control-wrapper play-wrapper">
+        <button class="control-btn" (click)="togglePlayPause()" [attr.aria-label]="isPlaying ? 'Pause' : 'Play'">
+          <svg *ngIf="!isPlaying" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 5V19L19 12L8 5Z" fill="currentColor" />
+          </svg>
+          <svg *ngIf="isPlaying" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z" fill="currentColor" />
+          </svg>
+        </button>
+        <div class="tooltip tooltip-right">
+          <div class="tooltip-arrow"></div>
+          <span *ngIf="!isPlaying">{{'play_video'|t}}</span>
+          <span *ngIf="isPlaying">{{'pause_video'|t}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Congratulations Message -->
+  <div class="congratulations-overlay" *ngIf="showCongratulations">
+    <div class="congratulations-card">
+      <div class="congrats-icon">🎉</div>
+      <h2>{{'congratulations'|t}}</h2>
+      <p>{{'feldenkrais_completed_message'|t}}</p>
+      <button class="btn-primary" (click)="goBack()">
+        {{'continue'|t}}
+      </button>
+    </div>
+  </div>
+
+</section>

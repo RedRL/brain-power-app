@@ -13,6 +13,8 @@ export const routes: Routes = [
   { path: 'music-session', loadComponent: () => import('./app/components/music-session/music-session.component').then(m => m.MusicSessionComponent) },
   { path: 'breathing-options', loadComponent: () => import('./app/components/breathing-options/breathing-options.component').then(m => m.BreathingOptionsComponent) },
   { path: 'breathing-session', loadComponent: () => import('./app/components/breathing-session/breathing-session.component').then(m => m.BreathingSessionComponent) },
+  { path: 'feldenkrais-options', loadComponent: () => import('./app/components/feldenkrais-options/feldenkrais-options.component').then(m => m.FeldenkraisOptionsComponent) },
+  { path: 'feldenkrais-session', loadComponent: () => import('./app/components/feldenkrais-session/feldenkrais-session.component').then(m => m.FeldenkraisSessionComponent) },
   { path: 'ai-assistant', loadComponent: () => import('./app/components/ai-assistant/ai-assistant.component').then(m => m.AiAssistantComponent) },
   { path: 'goals', loadComponent: () => import('./app/components/goals/goals.component').then(m => m.GoalsComponent) },
   { path: 'knowledge', loadComponent: () => import('./app/components/knowledge/knowledge.component').then(m => m.KnowledgeComponent) },

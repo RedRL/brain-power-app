@@ -1,0 +1,114 @@
+.content {
+  padding: 24px;
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.options-container {
+  width: 100%;
+  text-align: center;
+}
+
+.options-container h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.options-container p {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 48px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px 32px;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.option-btn .icon {
+  font-size: 2rem;
+}
+
+.option-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.option-btn:active {
+  transform: translateY(-2px);
+}
+
+.youtube-btn {
+  background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%);
+  color: #fff;
+  border: 2px solid rgba(255, 0, 0, 0.3);
+}
+
+.youtube-btn:hover {
+  box-shadow: 0 8px 24px rgba(255, 0, 0, 0.5);
+}
+
+.ai-youtube-btn {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: #fff;
+  border: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.ai-youtube-btn:hover {
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.5);
+}
+
+.ai-video-btn {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #fff;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.ai-video-btn:hover {
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+}
+
+@media (max-width: 768px) {
+  .options-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .options-container p {
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+
+  .option-btn {
+    padding: 20px 24px;
+    font-size: 1.1rem;
+  }
+
+  .option-btn .icon {
+    font-size: 1.8rem;
+  }
+}

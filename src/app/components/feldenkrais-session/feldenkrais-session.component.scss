@@ -1,0 +1,346 @@
+/* Feldenkrais session styles */
+
+.content {
+  padding: 8vw 4vw 4vw; /* Increased top padding */
+  max-width: 900px;
+  margin: 0 auto;
+  height: 100%; /* Full height */
+}
+
+.video-wrapper {
+  position: relative;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3vw;
+  padding: 3vw;
+  margin-bottom: 4vw;
+  backdrop-filter: blur(10px);
+}
+
+.video-frame {
+  position: relative;
+  overflow: visible; /* Allow progress bar to show above */
+  border-radius: 2vw;
+  margin-bottom: 2.5vw;
+  max-width: 280px; /* Smaller video */
+  margin-left: auto;
+  margin-right: auto;
+  aspect-ratio: 9 / 16; /* Vertical aspect ratio (portrait) */
+}
+
+.feldenkrais-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 2vw;
+  box-shadow: 0 1vw 5vw rgba(0,0,0,0.3);
+  background: #000;
+  object-fit: cover; /* Zoomed in to fill container */
+  object-position: center top; /* Crop more from the top */
+}
+
+@media (max-width: 768px) {
+  .video-frame {
+    max-width: 100%;
+  }
+
+  .feldenkrais-video {
+    height: 100%;
+  }
+}
+
+.custom-controls {
+  position: absolute;
+  bottom: -3vw; /* Positioned higher */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2.5vw;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5vw;
+  background: rgba(22, 163, 74, 0.8); /* Darker green background */
+  backdrop-filter: blur(10px);
+  border-radius: 2vw;
+  border: 1px solid rgba(22, 163, 74, 0.9); /* Darker green border */
+  z-index: 10;
+}
+
+.custom-controls.rtl {
+  flex-direction: row-reverse;
+}
+
+.control-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15vw; /* Increased */
+  height: 15vw; /* Increased */
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2vw;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #fff;
+  backdrop-filter: blur(5px);
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+  box-shadow: 0 0.5vw 2vw rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.control-btn svg {
+  width: 9vw; /* Increased */
+  height: 9vw; /* Increased */
+  filter: drop-shadow(0 0.3vw 0.5vw rgba(0, 0, 0, 0.3));
+}
+
+.tooltip {
+  position: absolute;
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); /* Orange gradient */
+  color: #fff;
+  padding: 1vw 2vw;
+  border-radius: 1.2vw;
+  font-size: 3.5vw; /* Increased */
+  font-weight: 500;
+  white-space: nowrap; /* No line breaks */
+  text-align: center;
+  line-height: 1.4;
+  opacity: 1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 0.5vw 2vw rgba(249, 115, 22, 0.4);
+  width: max-content;
+  min-width: 15vw;
+}
+
+.tooltip-left {
+  bottom: -6vw;
+  right: -0.3vw;
+  transform: translateY(0.7vw);
+}
+
+.tooltip-right {
+  bottom: -6vw;
+  left: 0.5vw;
+  transform: translateY(0.7vw);
+}
+
+.tooltip-arrow {
+  position: absolute;
+  top: -1.2vw;
+  width: 0;
+  height: 0;
+  border-left: 1.5vw solid transparent;
+  border-right: 1.5vw solid transparent;
+  border-bottom: 1.5vw solid #F97316;
+}
+
+.tooltip-left .tooltip-arrow {
+  right: 4vw;
+  left: auto;
+}
+
+.tooltip-right .tooltip-arrow {
+  left: 4vw; /* Arrow to the right side */
+}
+
+:fullscreen .tooltip,
+:-webkit-full-screen .tooltip,
+:-moz-full-screen .tooltip {
+  display: none;
+}
+
+:fullscreen .feldenkrais-video,
+:-webkit-full-screen .feldenkrais-video,
+:-moz-full-screen .feldenkrais-video {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+:fullscreen .video-wrapper,
+:-webkit-full-screen .video-wrapper,
+:-moz-full-screen .video-wrapper {
+  padding: 0;
+  margin: 0;
+  background: #000;
+  border-radius: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:fullscreen .video-frame,
+:-webkit-full-screen .video-frame,
+:-moz-full-screen .video-frame {
+  width: 100vw;
+  height: 100vh;
+  flex: 1;
+  margin: 0;
+  border-radius: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:fullscreen .progress-container,
+:-webkit-full-screen .progress-container,
+:-moz-full-screen .progress-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10000;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+}
+
+.progress-container {
+  position: absolute;
+  top: -4vw; /* Moved down a bit */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(22, 163, 74, 0.8); /* Darker green background */
+  backdrop-filter: blur(20px);
+  border-radius: 2.5vw;
+  padding: 1.5vw;
+  border: 1px solid rgba(22, 163, 74, 0.9); /* Darker green border */
+  z-index: 10;
+  width: calc(100% - 12vw);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 0.8vw;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0.8vw;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 0.3vw 0.6vw rgba(0, 0, 0, 0.3);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
+  border-radius: 0.8vw;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 1.5vw rgba(52, 211, 153, 0.5);
+}
+
+.progress-text {
+  margin-top: 1.5vw;
+  text-align: center;
+  color: #fff;
+  font-size: 4vw; /* Increased */
+  font-weight: 600;
+  text-shadow: 0 0.3vw 0.6vw rgba(0, 0, 0, 0.3);
+}
+
+.congratulations-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(10px);
+}
+
+.congratulations-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(52, 211, 153, 0.2) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(52, 211, 153, 0.3);
+  border-radius: 4vw;
+  padding: 6vw;
+  text-align: center;
+  max-width: 90vw;
+  box-shadow: 0 3vw 10vw rgba(0, 0, 0, 0.6);
+  animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(5vw);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.congrats-icon {
+  font-size: 10vw; /* Increased */
+  margin-bottom: 3vw;
+  animation: bounce 1s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5vw);
+  }
+}
+
+.congratulations-card h2 {
+  font-size: 8vw; /* Increased */
+  font-weight: 800;
+  margin: 0 0 2.5vw;
+  color: #fff;
+  text-shadow: 0 0.3vw 0.6vw rgba(0, 0, 0, 0.5);
+}
+
+.congratulations-card p {
+  font-size: 5vw; /* Increased */
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 4vw;
+  line-height: 1.6;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+  color: #fff;
+  border: none;
+  border-radius: 2vw;
+  padding: 3vw 8vw; /* Increased */
+  font-size: 5vw; /* Increased */
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0.6vw 2vw rgba(16, 185, 129, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-0.3vw);
+  box-shadow: 0 1vw 3vw rgba(16, 185, 129, 0.6);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
