@@ -76,8 +76,8 @@ export class LetsBeginComponent implements OnInit {
   }
 
   startGame() {
-    // Navigate to memory game component
-    this.router.navigate(['/memory-game'], { 
+    // Navigate to game options component
+    this.router.navigate(['/game-options'], { 
       queryParams: { 
         level: this.selectedLevel 
       } 

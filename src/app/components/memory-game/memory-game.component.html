@@ -1,0 +1,119 @@
+<app-header [title]="'memory_game_image_patterns'|t"></app-header>
+
+<section class="content">
+  
+  <!-- Viewing Phase: Show the pattern -->
+  <div class="game-container" *ngIf="phase === 'viewing'">
+    <div class="phase-header">
+      <h2>{{'memorize_pattern'|t}}</h2>
+      <p class="countdown">{{'pattern_will_hide_in'|t}} <strong>{{ getRemainingViewTime() }}</strong> {{'seconds'|t}}</p>
+    </div>
+    
+    <div class="pattern-grid" [style.grid-template-columns]="'repeat(' + gridSize + ', 1fr)'">
+      <div 
+        *ngFor="let row of patternGrid"
+        class="pattern-row">
+        <div 
+          *ngFor="let cell of row"
+          class="pattern-cell"
+          [style.background-color]="cell.color">
+        </div>
+      </div>
+    </div>
+    
+    <p class="instruction-text">{{'watch_carefully_pattern'|t}}</p>
+  </div>
+
+  <!-- Playing Phase: Recreate the pattern -->
+  <div class="game-container" *ngIf="phase === 'playing'">
+    <div class="phase-header">
+      <h2>{{'recreate_pattern'|t}}</h2>
+      <p class="instruction-text">{{'drag_pieces_to_grid'|t}}</p>
+    </div>
+
+    <!-- User's Grid -->
+    <div class="user-grid-container">
+      <div class="grid-label">{{'your_pattern'|t}}</div>
+      <div class="pattern-grid" [style.grid-template-columns]="'repeat(' + gridSize + ', 1fr)'">
+        <div 
+          *ngFor="let row of userGrid; let i = index"
+          class="pattern-row">
+          <div 
+            *ngFor="let cell of row; let j = index"
+            class="pattern-cell drop-zone"
+            [class.filled]="cell.isPlaced"
+            [attr.data-row]="i"
+            [attr.data-col]="j"
+            [style.background-color]="cell.isPlaced ? cell.color : '#2a2a2a'"
+            (click)="removePiece(i, j)">
+            <span class="cell-number" *ngIf="!cell.isPlaced">{{ i * gridSize + j + 1 }}</span>
+            <span class="remove-hint" *ngIf="cell.isPlaced">{{'click_to_remove'|t}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Available Pieces -->
+    <div class="pieces-container">
+      <div class="grid-label">{{'available_pieces'|t}}</div>
+      <div class="pieces-grid">
+        <div 
+          *ngFor="let piece of availablePieces; trackBy: trackByPieceId"
+          class="draggable-piece"
+          [class.used]="piece.isUsed"
+          [style.background-color]="piece.color"
+          [style.cursor]="!piece.isUsed && phase === 'playing' ? 'grab' : 'not-allowed'"
+          (mousedown)="onPieceMouseDown($event, piece)"
+          [attr.draggable]="false">
+          <span class="piece-hint" *ngIf="piece.isUsed">{{'used'|t}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completed Phase -->
+  <div class="game-container completed" *ngIf="phase === 'completed'">
+    <div class="completion-card">
+      <div class="completion-icon">🎉</div>
+      <h2>{{'congratulations'|t}}</h2>
+      <p class="success-message">{{'pattern_matched'|t}}</p>
+      <div class="score-display">
+        <div class="score-item">
+          <span class="score-label">{{'time'|t}}:</span>
+          <span class="score-value">{{ (completionTime / 1000) | number:'1.1-1' }}s</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">{{'score'|t}}:</span>
+          <span class="score-value">{{ score }}</span>
+        </div>
+      </div>
+      <div class="button-group">
+        <button class="btn-primary" (click)="restartGame()">
+          {{'play_again'|t}}
+        </button>
+        <button class="btn-secondary" (click)="goBack()">
+          {{'back_to_activities'|t}}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Failed Phase -->
+  <div class="game-container failed" *ngIf="phase === 'failed'">
+    <div class="completion-card">
+      <div class="completion-icon">😔</div>
+      <h2>{{'not_quite_right'|t}}</h2>
+      <p class="error-message">{{'pattern_mismatch'|t}}</p>
+      <div class="button-group">
+        <button class="btn-primary" (click)="restartGame()">
+          {{'try_again'|t}}
+        </button>
+        <button class="btn-secondary" (click)="goBack()">
+          {{'back_to_activities'|t}}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</section>
+

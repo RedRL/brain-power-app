@@ -1,0 +1,17 @@
+<app-header [title]="'game'|t"></app-header>
+
+<section class="content">
+  <div class="options-container">
+    <h2>{{'choose_game_type'|t}}</h2>
+    <p>{{'select_game_preference'|t}}</p>
+
+    <div class="button-group">
+      <button class="option-btn memory-game-btn" (click)="selectMemoryGame()">
+        <span class="icon">memory</span>
+        <span class="btn-text">{{'memory_game_image_patterns'|t}}</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+

@@ -15,6 +15,8 @@ export const routes: Routes = [
   { path: 'breathing-session', loadComponent: () => import('./app/components/breathing-session/breathing-session.component').then(m => m.BreathingSessionComponent) },
   { path: 'feldenkrais-options', loadComponent: () => import('./app/components/feldenkrais-options/feldenkrais-options.component').then(m => m.FeldenkraisOptionsComponent) },
   { path: 'feldenkrais-session', loadComponent: () => import('./app/components/feldenkrais-session/feldenkrais-session.component').then(m => m.FeldenkraisSessionComponent) },
+  { path: 'game-options', loadComponent: () => import('./app/components/game-options/game-options.component').then(m => m.GameOptionsComponent) },
+  { path: 'memory-game', loadComponent: () => import('./app/components/memory-game/memory-game.component').then(m => m.MemoryGameComponent) },
   { path: 'ai-assistant', loadComponent: () => import('./app/components/ai-assistant/ai-assistant.component').then(m => m.AiAssistantComponent) },
   { path: 'goals', loadComponent: () => import('./app/components/goals/goals.component').then(m => m.GoalsComponent) },
   { path: 'knowledge', loadComponent: () => import('./app/components/knowledge/knowledge.component').then(m => m.KnowledgeComponent) },
