@@ -45,7 +45,7 @@ npm run build:github-pages
 
 ## Deployment
 
-This app is configured for deployment to GitHub Pages at `https://yerushalmi-rl.com/holistic-gym-app`.
+This app is configured for deployment to GitHub Pages at `https://yerushalmi-rl.com/brain-power-app`.
 
 ### Automatic Deployment
 
@@ -64,7 +64,7 @@ The app automatically deploys when changes are pushed to the `main` branch via G
 
 ## Configuration
 
-- **Base URL**: `/holistic-gym-app/` (configured in angular.json)
+- **Base URL**: `/brain-power-app/` (configured in angular.json)
 - **Custom Domain**: `yerushalmi-rl.com` (configured via CNAME file)
 - **Routing**: SPA routing handled via 404.html redirect
 

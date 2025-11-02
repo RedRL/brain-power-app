@@ -60,7 +60,7 @@
                     }
                   ],
                   "outputHashing": "all",
-                  "baseHref": "/holistic-gym-app/"
+                  "baseHref": "/brain-power-app/"
                 },
             "development": {
               "buildOptimizer": false,
