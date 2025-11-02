@@ -52,10 +52,15 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
   isDragging: boolean = false;
   dragOffset: { x: number; y: number } = { x: 0, y: 0 };
   draggedElement: HTMLElement | null = null;
+  dragStartTimer: any = null;
+  dragStarted: boolean = false;
+  mouseDownPosition: { x: number; y: number } = { x: 0, y: 0 };
   
   // Bound event handlers for proper cleanup
   private boundMouseMove: ((e: MouseEvent) => void) | null = null;
   private boundMouseUp: ((e: MouseEvent) => void) | null = null;
+  private boundTouchMove: ((e: TouchEvent) => void) | null = null;
+  private boundTouchEnd: ((e: TouchEvent) => void) | null = null;
   
   // Timer
   viewTimer: any;
@@ -94,17 +99,14 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     // Use requestAnimationFrame to ensure DOM is ready
     requestAnimationFrame(() => {
       const pieces = document.querySelectorAll('.draggable-piece');
-      pieces.forEach((piece, index) => {
+      pieces.forEach((piece) => {
         const pieceElement = piece as HTMLElement;
-        if (index < this.availablePieces.length) {
-          const pieceData = this.availablePieces[index];
-          if (pieceData && !pieceData.isUsed && this.phase === 'playing') {
-            pieceElement.setAttribute('draggable', 'true');
-            pieceElement.style.cursor = 'grab';
-          } else {
-            pieceElement.setAttribute('draggable', 'false');
-            pieceElement.style.cursor = 'not-allowed';
-          }
+        if (this.phase === 'playing') {
+          pieceElement.setAttribute('draggable', 'false');
+          pieceElement.style.cursor = 'grab';
+        } else {
+          pieceElement.setAttribute('draggable', 'false');
+          pieceElement.style.cursor = 'not-allowed';
         }
       });
     });
@@ -117,13 +119,22 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval);
     }
+    if (this.dragStartTimer) {
+      clearTimeout(this.dragStartTimer);
+    }
     
     // Clean up mouse event listeners
     if (this.boundMouseMove) {
-      document.removeEventListener('mousemove', this.boundMouseMove);
+      document.removeEventListener('mousemove', this.boundMouseMove, true);
     }
     if (this.boundMouseUp) {
-      document.removeEventListener('mouseup', this.boundMouseUp);
+      document.removeEventListener('mouseup', this.boundMouseUp, true);
+    }
+    if (this.boundTouchMove) {
+      document.removeEventListener('touchmove', this.boundTouchMove, true);
+    }
+    if (this.boundTouchEnd) {
+      document.removeEventListener('touchend', this.boundTouchEnd, true);
     }
     
     // Clean up dragged element
@@ -284,21 +295,87 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     
-    if (piece.isUsed || this.phase !== 'playing') {
+    if (this.phase !== 'playing') {
       return;
     }
     
     event.preventDefault();
     event.stopPropagation();
-    event.stopImmediatePropagation();
     
-    this.isDragging = true;
     this.draggedPiece = piece;
+    this.dragStarted = false;
+    this.mouseDownPosition = { x: event.clientX, y: event.clientY };
     
     const target = event.currentTarget as HTMLElement;
     if (!target) {
       return;
     }
+    
+    // Add visual feedback for press-and-hold
+    target.classList.add('press-hold');
+    
+    // Create bound functions for proper cleanup
+    this.boundMouseMove = (e: MouseEvent) => this.onMouseMove(e);
+    this.boundMouseUp = (e: MouseEvent) => this.onMouseUp(e);
+    
+    // Add global mouse event listeners
+    document.addEventListener('mousemove', this.boundMouseMove, true);
+    document.addEventListener('mouseup', this.boundMouseUp, true);
+    
+    // Start drag after a short delay (300ms for better press-and-hold feel)
+    this.dragStartTimer = setTimeout(() => {
+      target.classList.remove('press-hold');
+      this.startDraggingMouse(event, target);
+    }, 300);
+  }
+  
+  onPieceTouchStart(event: TouchEvent, piece: DraggablePiece) {
+    if (this.phase !== 'playing') {
+      return;
+    }
+    
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const touch = event.touches[0];
+    if (!touch) {
+      return;
+    }
+    
+    this.draggedPiece = piece;
+    this.dragStarted = false;
+    this.mouseDownPosition = { x: touch.clientX, y: touch.clientY };
+    
+    const target = event.currentTarget as HTMLElement;
+    if (!target) {
+      return;
+    }
+    
+    // Add visual feedback for press-and-hold
+    target.classList.add('press-hold');
+    
+    // Create bound functions for proper cleanup
+    this.boundTouchMove = (e: TouchEvent) => this.onTouchMove(e);
+    this.boundTouchEnd = (e: TouchEvent) => this.onTouchEnd(e);
+    
+    // Add global touch event listeners
+    document.addEventListener('touchmove', this.boundTouchMove, { passive: false, capture: true });
+    document.addEventListener('touchend', this.boundTouchEnd, true);
+    
+    // Start drag after a short delay (300ms for better press-and-hold feel)
+    this.dragStartTimer = setTimeout(() => {
+      target.classList.remove('press-hold');
+      this.startDraggingTouch(touch, target);
+    }, 300);
+  }
+  
+  startDraggingMouse(event: MouseEvent, target: HTMLElement) {
+    if (!this.draggedPiece) {
+      return;
+    }
+    
+    this.isDragging = true;
+    this.dragStarted = true;
     
     this.draggedElement = target.cloneNode(true) as HTMLElement;
     this.draggedElement.style.position = 'fixed';
@@ -309,33 +386,65 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggedElement.style.cursor = 'grabbing';
     
     const rect = target.getBoundingClientRect();
-    this.dragOffset.x = event.clientX - rect.left;
-    this.dragOffset.y = event.clientY - rect.top;
+    this.dragOffset.x = this.mouseDownPosition.x - rect.left;
+    this.dragOffset.y = this.mouseDownPosition.y - rect.top;
     
-    this.draggedElement.style.left = (event.clientX - this.dragOffset.x) + 'px';
-    this.draggedElement.style.top = (event.clientY - this.dragOffset.y) + 'px';
+    this.draggedElement.style.left = (this.mouseDownPosition.x - this.dragOffset.x) + 'px';
+    this.draggedElement.style.top = (this.mouseDownPosition.y - this.dragOffset.y) + 'px';
     this.draggedElement.style.width = rect.width + 'px';
     this.draggedElement.style.height = rect.height + 'px';
     
     document.body.appendChild(this.draggedElement);
     
     target.style.opacity = '0.5';
-    
-    // Create bound functions for proper cleanup
-    this.boundMouseMove = (e: MouseEvent) => this.onMouseMove(e);
-    this.boundMouseUp = (e: MouseEvent) => this.onMouseUp(e);
-    
-    // Add global mouse event listeners with capture phase
-    document.addEventListener('mousemove', this.boundMouseMove, true);
-    document.addEventListener('mouseup', this.boundMouseUp, true);
   }
-
-  onMouseMove(event: MouseEvent) {
-    if (!this.isDragging) {
+  
+  startDraggingTouch(touch: Touch, target: HTMLElement) {
+    if (!this.draggedPiece) {
       return;
     }
     
-    if (!this.draggedElement) {
+    this.isDragging = true;
+    this.dragStarted = true;
+    
+    this.draggedElement = target.cloneNode(true) as HTMLElement;
+    this.draggedElement.style.position = 'fixed';
+    this.draggedElement.style.pointerEvents = 'none';
+    this.draggedElement.style.zIndex = '10000';
+    this.draggedElement.style.opacity = '0.8';
+    this.draggedElement.style.transform = 'scale(1.2)';
+    this.draggedElement.style.cursor = 'grabbing';
+    
+    const rect = target.getBoundingClientRect();
+    this.dragOffset.x = touch.clientX - rect.left;
+    this.dragOffset.y = touch.clientY - rect.top;
+    
+    this.draggedElement.style.left = (touch.clientX - this.dragOffset.x) + 'px';
+    this.draggedElement.style.top = (touch.clientY - this.dragOffset.y) + 'px';
+    this.draggedElement.style.width = rect.width + 'px';
+    this.draggedElement.style.height = rect.height + 'px';
+    
+    document.body.appendChild(this.draggedElement);
+    
+    target.style.opacity = '0.5';
+  }
+
+  onMouseMove(event: MouseEvent) {
+    // If dragging hasn't started yet, check if mouse moved too far (cancel drag)
+    if (!this.isDragging && this.draggedPiece) {
+      const distance = Math.sqrt(
+        Math.pow(event.clientX - this.mouseDownPosition.x, 2) +
+        Math.pow(event.clientY - this.mouseDownPosition.y, 2)
+      );
+      
+      // If moved more than 10px before drag started, cancel the drag
+      if (distance > 10) {
+        this.cancelDrag();
+      }
+      return;
+    }
+    
+    if (!this.isDragging || !this.draggedElement) {
       return;
     }
     
@@ -356,13 +465,8 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         });
         
-        // Check if this drop zone is already filled
-        const row = parseInt(dropZone.getAttribute('data-row') || '0');
-        const col = parseInt(dropZone.getAttribute('data-col') || '0');
-        
-        if (!this.userGrid[row][col].isPlaced) {
-          dropZone.classList.add('drag-over');
-        }
+        // Always allow drag-over for any drop zone
+        dropZone.classList.add('drag-over');
       } else {
         // Remove drag-over from all zones
         document.querySelectorAll('.drag-over').forEach(el => {
@@ -371,22 +475,125 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-
-  onMouseUp(event: MouseEvent) {
-    if (!this.isDragging || !this.draggedPiece) {
+  
+  onTouchMove(event: TouchEvent) {
+    const touch = event.touches[0];
+    if (!touch) {
+      return;
+    }
+    
+    // If dragging hasn't started yet, check if touch moved too far (cancel drag)
+    if (!this.isDragging && this.draggedPiece) {
+      const distance = Math.sqrt(
+        Math.pow(touch.clientX - this.mouseDownPosition.x, 2) +
+        Math.pow(touch.clientY - this.mouseDownPosition.y, 2)
+      );
+      
+      // If moved more than 10px before drag started, cancel the drag
+      if (distance > 10) {
+        this.cancelDrag();
+      }
+      return;
+    }
+    
+    if (!this.isDragging || !this.draggedElement) {
       return;
     }
     
     event.preventDefault();
     
-    // Remove global listeners
+    this.draggedElement.style.left = (touch.clientX - this.dragOffset.x) + 'px';
+    this.draggedElement.style.top = (touch.clientY - this.dragOffset.y) + 'px';
+    
+    // Check which drop zone we're over
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (elementBelow) {
+      const dropZone = elementBelow.closest('.drop-zone') as HTMLElement;
+      if (dropZone) {
+        // Remove drag-over from all zones
+        document.querySelectorAll('.drag-over').forEach(el => {
+          if (el !== dropZone) {
+            el.classList.remove('drag-over');
+          }
+        });
+        
+        // Always allow drag-over for any drop zone
+        dropZone.classList.add('drag-over');
+      } else {
+        // Remove drag-over from all zones
+        document.querySelectorAll('.drag-over').forEach(el => {
+          el.classList.remove('drag-over');
+        });
+      }
+    }
+  }
+  
+  cancelDrag() {
+    // Clear the drag start timer
+    if (this.dragStartTimer) {
+      clearTimeout(this.dragStartTimer);
+      this.dragStartTimer = null;
+    }
+    
+    // Remove press-hold class from all pieces
+    document.querySelectorAll('.draggable-piece.press-hold').forEach(el => {
+      el.classList.remove('press-hold');
+    });
+    
+    // Remove listeners
     if (this.boundMouseMove) {
-      document.removeEventListener('mousemove', this.boundMouseMove);
+      document.removeEventListener('mousemove', this.boundMouseMove, true);
       this.boundMouseMove = null;
     }
     if (this.boundMouseUp) {
-      document.removeEventListener('mouseup', this.boundMouseUp);
+      document.removeEventListener('mouseup', this.boundMouseUp, true);
       this.boundMouseUp = null;
+    }
+    if (this.boundTouchMove) {
+      document.removeEventListener('touchmove', this.boundTouchMove, true);
+      this.boundTouchMove = null;
+    }
+    if (this.boundTouchEnd) {
+      document.removeEventListener('touchend', this.boundTouchEnd, true);
+      this.boundTouchEnd = null;
+    }
+    
+    // Reset state
+    this.draggedPiece = null;
+    this.dragStarted = false;
+    this.isDragging = false;
+  }
+
+  onMouseUp(event: MouseEvent) {
+    event.preventDefault();
+    
+    // Clear the drag start timer if it hasn't fired yet
+    if (this.dragStartTimer) {
+      clearTimeout(this.dragStartTimer);
+      this.dragStartTimer = null;
+    }
+    
+    // Remove press-hold class from all pieces
+    document.querySelectorAll('.draggable-piece.press-hold').forEach(el => {
+      el.classList.remove('press-hold');
+    });
+    
+    // Remove global listeners
+    if (this.boundMouseMove) {
+      document.removeEventListener('mousemove', this.boundMouseMove, true);
+      this.boundMouseMove = null;
+    }
+    if (this.boundMouseUp) {
+      document.removeEventListener('mouseup', this.boundMouseUp, true);
+      this.boundMouseUp = null;
+    }
+    
+    // If drag never started, just reset and return
+    if (!this.dragStarted || !this.isDragging) {
+      this.draggedPiece = null;
+      this.dragStarted = false;
+      this.isDragging = false;
+      return;
     }
     
     // Remove drag element
@@ -414,24 +621,21 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
         const row = parseInt(dropZone.getAttribute('data-row') || '0');
         const col = parseInt(dropZone.getAttribute('data-col') || '0');
         
-        if (!this.userGrid[row][col].isPlaced && !this.draggedPiece.isUsed) {
-          // Place the piece
-          this.userGrid[row][col].color = this.draggedPiece.color;
-          this.userGrid[row][col].isPlaced = true;
-          this.draggedPiece.isUsed = true;
-          
-          // Force change detection
-          this.userGrid = [...this.userGrid];
-          this.availablePieces = [...this.availablePieces];
-          
-          // Update draggable attributes
-          setTimeout(() => {
-            this.updateDraggableAttributes();
-          }, 0);
-          
-          // Check if grid is complete
-          this.checkCompletion();
-        }
+        // Place the piece (allow replacing existing pieces)
+        this.userGrid[row][col].color = this.draggedPiece.color;
+        this.userGrid[row][col].isPlaced = true;
+        
+        // Force change detection
+        this.userGrid = [...this.userGrid];
+        this.availablePieces = [...this.availablePieces];
+        
+        // Update draggable attributes
+        setTimeout(() => {
+          this.updateDraggableAttributes();
+        }, 0);
+        
+        // Check if grid is complete
+        this.checkCompletion();
       }
     }
     
@@ -443,6 +647,100 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     // Reset state
     this.isDragging = false;
     this.draggedPiece = null;
+    this.dragStarted = false;
+  }
+  
+  onTouchEnd(event: TouchEvent) {
+    event.preventDefault();
+    
+    // Clear the drag start timer if it hasn't fired yet
+    if (this.dragStartTimer) {
+      clearTimeout(this.dragStartTimer);
+      this.dragStartTimer = null;
+    }
+    
+    // Remove press-hold class from all pieces
+    document.querySelectorAll('.draggable-piece.press-hold').forEach(el => {
+      el.classList.remove('press-hold');
+    });
+    
+    // Remove global listeners
+    if (this.boundTouchMove) {
+      document.removeEventListener('touchmove', this.boundTouchMove, true);
+      this.boundTouchMove = null;
+    }
+    if (this.boundTouchEnd) {
+      document.removeEventListener('touchend', this.boundTouchEnd, true);
+      this.boundTouchEnd = null;
+    }
+    
+    // If drag never started, just reset and return
+    if (!this.dragStarted || !this.isDragging) {
+      this.draggedPiece = null;
+      this.dragStarted = false;
+      this.isDragging = false;
+      return;
+    }
+    
+    // Get the last touch position
+    const touch = event.changedTouches[0];
+    if (!touch) {
+      this.cancelDrag();
+      return;
+    }
+    
+    // Remove drag element
+    if (this.draggedElement) {
+      this.draggedElement.remove();
+      this.draggedElement = null;
+    }
+    
+    // Reset original element
+    const pieces = document.querySelectorAll('.draggable-piece');
+    pieces.forEach((piece) => {
+      const pieceEl = piece as HTMLElement;
+      if (pieceEl.style.opacity === '0.5') {
+        pieceEl.style.opacity = '1';
+      }
+    });
+    
+    // Find the drop zone we're over
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (elementBelow && this.draggedPiece) {
+      const dropZone = elementBelow.closest('.drop-zone') as HTMLElement;
+      if (dropZone) {
+        dropZone.classList.remove('drag-over');
+        
+        const row = parseInt(dropZone.getAttribute('data-row') || '0');
+        const col = parseInt(dropZone.getAttribute('data-col') || '0');
+        
+        // Place the piece (allow replacing existing pieces)
+        this.userGrid[row][col].color = this.draggedPiece.color;
+        this.userGrid[row][col].isPlaced = true;
+        
+        // Force change detection
+        this.userGrid = [...this.userGrid];
+        this.availablePieces = [...this.availablePieces];
+        
+        // Update draggable attributes
+        setTimeout(() => {
+          this.updateDraggableAttributes();
+        }, 0);
+        
+        // Check if grid is complete
+        this.checkCompletion();
+      }
+    }
+    
+    // Remove drag-over classes
+    document.querySelectorAll('.drag-over').forEach(el => {
+      el.classList.remove('drag-over');
+    });
+    
+    // Reset state
+    this.isDragging = false;
+    this.draggedPiece = null;
+    this.dragStarted = false;
   }
 
   // Legacy drag handlers (keeping for fallback, but using mouse events)
@@ -482,7 +780,7 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Visual feedback
     const target = event.currentTarget as HTMLElement;
-    if (target && target.classList.contains('drop-zone') && !this.userGrid[row][col].isPlaced) {
+    if (target && target.classList.contains('drop-zone')) {
       target.classList.add('drag-over');
     }
   }
@@ -522,14 +820,13 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     
-    if (!pieceToPlace || pieceToPlace.isUsed || this.userGrid[row][col].isPlaced || this.phase !== 'playing') {
+    if (!pieceToPlace || this.phase !== 'playing') {
       return;
     }
     
-    // Place the piece
+    // Place the piece (allow replacing existing pieces)
     this.userGrid[row][col].color = pieceToPlace.color;
     this.userGrid[row][col].isPlaced = true;
-    pieceToPlace.isUsed = true;
     
     this.draggedPiece = null;
     
@@ -551,12 +848,7 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     
-    // Find the piece and mark it as unused
-    const piece = this.availablePieces.find(p => p.color === this.userGrid[row][col].color && p.isUsed);
-    if (piece) {
-      piece.isUsed = false;
-    }
-    
+    // Clear the cell
     this.userGrid[row][col].color = '';
     this.userGrid[row][col].isPlaced = false;
   }

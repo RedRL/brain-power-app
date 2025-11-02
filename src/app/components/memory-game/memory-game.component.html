@@ -44,10 +44,7 @@
             [class.filled]="cell.isPlaced"
             [attr.data-row]="i"
             [attr.data-col]="j"
-            [style.background-color]="cell.isPlaced ? cell.color : '#2a2a2a'"
-            (click)="removePiece(i, j)">
-            <span class="cell-number" *ngIf="!cell.isPlaced">{{ i * gridSize + j + 1 }}</span>
-            <span class="remove-hint" *ngIf="cell.isPlaced">{{'click_to_remove'|t}}</span>
+            [style.background-color]="cell.color || '#2a2a2a'">
           </div>
         </div>
       </div>
@@ -60,12 +57,11 @@
         <div 
           *ngFor="let piece of availablePieces; trackBy: trackByPieceId"
           class="draggable-piece"
-          [class.used]="piece.isUsed"
           [style.background-color]="piece.color"
-          [style.cursor]="!piece.isUsed && phase === 'playing' ? 'grab' : 'not-allowed'"
+          [style.cursor]="phase === 'playing' ? 'grab' : 'not-allowed'"
           (mousedown)="onPieceMouseDown($event, piece)"
+          (touchstart)="onPieceTouchStart($event, piece)"
           [attr.draggable]="false">
-          <span class="piece-hint" *ngIf="piece.isUsed">{{'used'|t}}</span>
         </div>
       </div>
     </div>

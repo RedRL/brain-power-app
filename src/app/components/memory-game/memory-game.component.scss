@@ -66,7 +66,7 @@
   position: relative;
   cursor: pointer;
   
-  &:hover {
+  &:hover:not(.drop-zone) {
     transform: scale(1.05);
     border-color: rgba(255, 255, 255, 0.4);
   }
@@ -74,26 +74,20 @@
 
 .drop-zone {
   border: 3px dashed rgba(255, 255, 255, 0.3);
-  background: #2a2a2a !important;
   user-select: none;
   -webkit-user-select: none;
   pointer-events: auto;
+  cursor: default;
   
   &.filled {
     border-style: solid;
     border-color: rgba(255, 255, 255, 0.4);
   }
   
-  &:hover:not(.filled) {
-    border-color: rgba(255, 255, 255, 0.5);
-    background: #333 !important;
-  }
-  
-  &.drag-over:not(.filled) {
+  &.drag-over {
     border-color: #FFD700;
-    background: rgba(255, 215, 0, 0.2) !important;
     border-width: 4px;
-    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
   }
 }
 
@@ -162,17 +156,21 @@
   -ms-user-select: none;
   -webkit-touch-callout: none;
   pointer-events: auto !important;
-  touch-action: pan-y;
+  touch-action: manipulation;
   
-  &:hover:not(.used) {
+  &:hover {
     transform: scale(1.1) translateY(-4px);
     border-color: rgba(255, 255, 255, 0.6);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   }
   
-  &:active:not(.used) {
+  &:active {
     cursor: grabbing !important;
     opacity: 0.8;
+  }
+  
+  &.press-hold {
+    animation: pressHold 0.3s ease-out forwards;
   }
   
   &[draggable="true"] {
@@ -186,13 +184,20 @@
       cursor: grabbing !important;
     }
   }
-  
-  &[draggable="false"],
-  &.used {
-    opacity: 0.3;
-    cursor: not-allowed;
-    filter: grayscale(100%);
-    pointer-events: none;
+}
+
+@keyframes pressHold {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+    border-color: rgba(255, 215, 0, 0.8);
+  }
+  100% {
+    transform: scale(1.05);
+    border-color: #FFD700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
   }
 }
 
