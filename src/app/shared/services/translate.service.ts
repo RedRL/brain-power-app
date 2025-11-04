@@ -58,6 +58,8 @@ const en: Dict = {
   rewind_5_seconds: 'Back 5 sec',
   video_progress: 'Video Progress',
   congratulations: 'Congratulations!',
+  daily_routine_completed: 'You\'ve completed all your daily activities!',
+  ok: 'OK',
   video_completed_message: 'You have successfully completed watching the entire video. Great job!',
   video_not_supported: 'Your browser does not support the video tag.',
   fullscreen_instructions: 'Press F or double-click for fullscreen',
@@ -85,9 +87,11 @@ const en: Dict = {
   track_progress: 'Track your progress and stay motivated with these achievable goals.',
   add_new_goal: 'Add New Goal',
   // Goal titles
+  complete_daily_routine: 'Complete daily routine',
   goal_family_call: 'Call a family member today',
   goal_memory_game: 'Practice memory game 3 this week',
   goal_breathing: '5-minute breathing after breakfast',
+  new_goal: 'New goal',
   // Article translations
   article_nutrition_title: 'Nutrition Pacing',
   article_nutrition_excerpt: 'Learn how to maintain steady energy throughout the day...',
@@ -1747,6 +1751,8 @@ const he: Dict = {
   rewind_5_seconds: '5 שניות\nאחורה',
   video_progress: 'התקדמות הצפייה',
   congratulations: '!כל הכבוד',
+  daily_routine_completed: 'השלמת את כל הפעילויות היומיות שלך!',
+  ok: 'אישור',
   video_completed_message: 'סיימתם לצפות בכל הסרטון בהצלחה. עבודה מעולה!',
   video_not_supported: 'הדפדפן שלכם לא תומך בתג וידאו.',
   fullscreen_instructions: 'לחצו F או לחיצה כפולה למסך מלא',
@@ -1775,9 +1781,11 @@ const he: Dict = {
   track_progress: 'עקבו אחר ההתקדמות שלכם:',
   add_new_goal: 'הוסף יעד חדש',
   // Goal titles
-  goal_family_call: 'התקשר עם בן משפחה היום',
+  complete_daily_routine: 'השלם את השגרה היומית',
+  goal_family_call: 'התקשר לבן משפחה היום',
   goal_memory_game: 'תרגל משחק זיכרון 3 השבוע',
   goal_breathing: '5 דקות נשימה אחרי ארוחת בוקר',
+  new_goal: 'יעד חדש',
   // Article translations
   article_nutrition_title: 'קצב תזונה',
   article_nutrition_excerpt: 'למדו כיצד לשמור על אנרגיה יציבה לאורך היום...',

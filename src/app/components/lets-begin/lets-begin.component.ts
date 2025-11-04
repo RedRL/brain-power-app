@@ -23,6 +23,7 @@ export class LetsBeginComponent implements OnInit {
   isBreathingExerciseCompleted: boolean = false;
   isFeldenkraisExerciseCompleted: boolean = false;
   isMemoryGameCompleted: boolean = false;
+  showCongratulationsModal: boolean = false;
 
   constructor(
     private router: Router,
@@ -44,6 +45,8 @@ export class LetsBeginComponent implements OnInit {
         if ((event as NavigationEnd).url === '/lets-begin') {
           // Refresh completion status and progress for all activities
           this.updateProgress();
+          // Check if all activities are completed and show congratulations if needed
+          this.checkAndShowCongratulations();
         }
       });
   }
@@ -101,6 +104,9 @@ export class LetsBeginComponent implements OnInit {
     
     this.completedToday = completedCount;
     this.todayProgress = this.completedToday / this.totalExercises;
+    
+    // Check if all activities are completed and show congratulations if needed
+    this.checkAndShowCongratulations();
   }
 
   completeExercise(exerciseId: string, durationSec: number, score?: number) {
@@ -143,5 +149,25 @@ export class LetsBeginComponent implements OnInit {
 
   startMusicSession() {
     this.router.navigate(['/music-session']);
+  }
+
+  checkAndShowCongratulations() {
+    // Check if all daily activities are completed
+    if (this.dataService.isAllDailyActivitiesCompleted()) {
+      // Check if we've already shown the congratulations for today
+      const today = new Date().toISOString().split('T')[0];
+      const lastShownDate = localStorage.getItem('dailyRoutineCongratulationsShown');
+      
+      // Only show if we haven't shown it today
+      if (lastShownDate !== today) {
+        this.showCongratulationsModal = true;
+        localStorage.setItem('dailyRoutineCongratulationsShown', today);
+      }
+    }
+  }
+
+  onCongratulationsOk() {
+    this.showCongratulationsModal = false;
+    this.router.navigate(['/goals']);
   }
 }

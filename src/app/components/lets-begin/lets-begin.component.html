@@ -61,3 +61,15 @@
   </div>
 
 </section>
+
+<!-- Congratulations Modal -->
+<div class="congratulations-overlay" *ngIf="showCongratulationsModal" (click)="onCongratulationsOk()">
+  <div class="congratulations-modal" (click)="$event.stopPropagation()">
+    <div class="congratulations-icon">🎉</div>
+    <h2>{{'congratulations'|t}}</h2>
+    <p class="congratulations-message">{{'daily_routine_completed'|t}}</p>
+    <button class="btn-primary" (click)="onCongratulationsOk()">
+      {{'ok'|t}}
+    </button>
+  </div>
+</div>

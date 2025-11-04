@@ -92,9 +92,34 @@ export class DataService {
   getGoals(): Goal[] {
     return this.storage.get<Goal[]>('goals', [
       { id: '1', title: this.translateService.t('goal_family_call'), done: false },
-      { id: '2', title: this.translateService.t('goal_memory_game'), done: false },
       { id: '3', title: this.translateService.t('goal_breathing'), done: false }
     ]);
+  }
+
+  isAllDailyActivitiesCompleted(): boolean {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check Music Session completion
+    const musicCompletedDate = localStorage.getItem('musicSessionCompleted');
+    const isMusicSessionCompleted = musicCompletedDate === today;
+    
+    // Check Breathing Exercise completion
+    const breathingCompletedDate = localStorage.getItem('breathingSessionCompleted');
+    const isBreathingExerciseCompleted = breathingCompletedDate === today;
+    
+    // Check Feldenkrais Exercise completion
+    const feldenkraisCompletedDate = localStorage.getItem('feldenkraisSessionCompleted');
+    const isFeldenkraisExerciseCompleted = feldenkraisCompletedDate === today;
+    
+    // Check Memory Game completion
+    const todayCompletions = this.getTodayProgress();
+    const isMemoryGameCompleted = todayCompletions.some(c => c.exerciseId === 'memory');
+    
+    // All 4 activities must be completed
+    return isMusicSessionCompleted && 
+           isBreathingExerciseCompleted && 
+           isFeldenkraisExerciseCompleted && 
+           isMemoryGameCompleted;
   }
 
   saveGoals(goals: Goal[]): void {

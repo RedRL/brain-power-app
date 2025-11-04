@@ -7,6 +7,21 @@
   </div>
   
   <div class="goals-list">
+    <!-- Daily Routine Completion Checkbox (Auto-checked, disabled) -->
+    <div class="card goal-item goal-item--daily-routine" [class.completed]="isDailyRoutineCompleted">
+      <label class="goal-checkbox">
+        <input 
+          type="checkbox" 
+          [checked]="isDailyRoutineCompleted"
+          [disabled]="true"
+          (click)="$event.preventDefault()">
+        <span class="goal-label" [class.completed]="isDailyRoutineCompleted">
+          {{'complete_daily_routine'|t}}
+        </span>
+      </label>
+    </div>
+    
+    <!-- Regular Goals -->
     <div *ngFor="let goal of goals" class="card goal-item">
       <label class="goal-checkbox">
         <input 
