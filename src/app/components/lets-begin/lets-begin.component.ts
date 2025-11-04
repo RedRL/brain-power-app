@@ -20,6 +20,9 @@ export class LetsBeginComponent implements OnInit {
   totalExercises: number = 4;
   todayProgress: number = 0;
   isMusicSessionCompleted: boolean = false;
+  isBreathingExerciseCompleted: boolean = false;
+  isFeldenkraisExerciseCompleted: boolean = false;
+  isMemoryGameCompleted: boolean = false;
 
   constructor(
     private router: Router,
@@ -31,15 +34,16 @@ export class LetsBeginComponent implements OnInit {
     const stored = localStorage.getItem('level') as any;
     this.selectedLevel = (stored === 'advanced' || stored === 'grand') ? stored : 'beginner';
     this.loadExercises();
+    // updateProgress() calls checkAllActivityCompletions() internally
     this.updateProgress();
-    this.checkMusicSessionCompletion();
     
-    // Listen for navigation events to refresh completion status
+    // Listen for navigation events to refresh completion status when returning to this page
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event) => {
         if ((event as NavigationEnd).url === '/lets-begin') {
-          this.checkMusicSessionCompletion();
+          // Refresh completion status and progress for all activities
+          this.updateProgress();
         }
       });
   }
@@ -85,8 +89,17 @@ export class LetsBeginComponent implements OnInit {
   }
 
   updateProgress() {
-    const todayCompletions = this.dataService.getTodayProgress();
-    this.completedToday = todayCompletions.length;
+    // Check all activity completions first
+    this.checkAllActivityCompletions();
+    
+    // Count completed activities
+    let completedCount = 0;
+    if (this.isMusicSessionCompleted) completedCount++;
+    if (this.isBreathingExerciseCompleted) completedCount++;
+    if (this.isFeldenkraisExerciseCompleted) completedCount++;
+    if (this.isMemoryGameCompleted) completedCount++;
+    
+    this.completedToday = completedCount;
     this.todayProgress = this.completedToday / this.totalExercises;
   }
 
@@ -103,10 +116,29 @@ export class LetsBeginComponent implements OnInit {
     this.updateProgress();
   }
 
-  checkMusicSessionCompletion() {
+  checkAllActivityCompletions() {
     const today = new Date().toISOString().split('T')[0];
-    const completedDate = localStorage.getItem('musicSessionCompleted');
-    this.isMusicSessionCompleted = completedDate === today;
+    
+    // Check Music Session completion (uses localStorage)
+    const musicCompletedDate = localStorage.getItem('musicSessionCompleted');
+    this.isMusicSessionCompleted = musicCompletedDate === today;
+    
+    // Check Breathing Exercise completion (uses localStorage)
+    const breathingCompletedDate = localStorage.getItem('breathingSessionCompleted');
+    this.isBreathingExerciseCompleted = breathingCompletedDate === today;
+    
+    // Check Feldenkrais Exercise completion (uses localStorage)
+    const feldenkraisCompletedDate = localStorage.getItem('feldenkraisSessionCompleted');
+    this.isFeldenkraisExerciseCompleted = feldenkraisCompletedDate === today;
+    
+    // Check Memory Game completion (uses dataService)
+    const todayCompletions = this.dataService.getTodayProgress();
+    this.isMemoryGameCompleted = todayCompletions.some(c => c.exerciseId === 'memory');
+  }
+
+  checkMusicSessionCompletion() {
+    // Kept for backward compatibility, but checkAllActivityCompletions is preferred
+    this.checkAllActivityCompletions();
   }
 
   startMusicSession() {

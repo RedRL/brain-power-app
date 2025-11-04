@@ -1,8 +1,10 @@
 .content {
-  padding: 24px;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 4vw clamp(12px, 3vw, 24px) clamp(12px, 3vw, 24px);
+  max-width: min(800px, 95vw);
+  margin: 3vw auto 0;
   min-height: calc(100vh - 100px);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .game-container {
@@ -11,44 +13,47 @@
 
 .phase-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-top: 3vw;
+  margin-bottom: clamp(16px, 4vw, 32px);
 }
 
 .phase-header h2 {
-  font-size: 2rem;
+  font-size: 7vw;
   font-weight: 800;
   color: #fff;
-  margin: 0 0 12px;
+  margin: 0 0 1.5vw;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .countdown {
-  font-size: 1.2rem;
+  font-size: 4.5vw;
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
   
   strong {
     color: #FFD700;
-    font-size: 1.5rem;
+    font-size: 5.5vw;
   }
 }
 
 .instruction-text {
   text-align: center;
-  font-size: 1.1rem;
+  font-size: 5.5vw;
   color: rgba(255, 255, 255, 0.8);
-  margin: 16px 0;
+  margin: 2.5vw 0;
 }
 
 .pattern-grid {
   display: grid;
-  gap: 8px;
-  max-width: 400px;
-  margin: 0 auto 32px;
-  padding: 16px;
+  gap: 1.5vw;
+  width: 100%;
+  max-width: min(400px, 85vw);
+  margin: 0 auto clamp(20px, 4vw, 32px);
+  padding: clamp(8px, 2.5vw, 16px);
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 16px;
+  border-radius: clamp(10px, 2.5vw, 16px);
   backdrop-filter: blur(10px);
+  box-sizing: border-box;
 }
 
 .pattern-row {
@@ -57,14 +62,17 @@
 
 .pattern-cell {
   aspect-ratio: 1;
-  border-radius: 8px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  min-height: 0;
+  border-radius: clamp(6px, 1.5vw, 8px);
+  border: clamp(2px, 0.5vw, 3px) solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   cursor: pointer;
+  box-sizing: border-box;
   
   &:hover:not(.drop-zone) {
     transform: scale(1.05);
@@ -73,11 +81,12 @@
 }
 
 .drop-zone {
-  border: 3px dashed rgba(255, 255, 255, 0.3);
+  border: clamp(2px, 0.5vw, 3px) dashed rgba(255, 255, 255, 0.3);
   user-select: none;
   -webkit-user-select: none;
   pointer-events: auto;
   cursor: default;
+  transition: border-color 0.1s ease, border-width 0.1s ease, box-shadow 0.1s ease;
   
   &.filled {
     border-style: solid;
@@ -85,23 +94,23 @@
   }
   
   &.drag-over {
-    border-color: #FFD700;
-    border-width: 4px;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    border-color: #FFD700 !important;
+    border-width: clamp(3px, 0.75vw, 4px) !important;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
   }
 }
 
 .cell-number {
-  font-size: 1.2rem;
+  font-size: 4.5vw;
   color: rgba(255, 255, 255, 0.4);
   font-weight: 700;
 }
 
 .remove-hint {
-  font-size: 0.7rem;
+  font-size: 3.2vw;
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
-  padding: 4px;
+  padding: 0.75vw;
   display: none;
 }
 
@@ -110,39 +119,51 @@
 }
 
 .user-grid-container {
-  margin-bottom: 48px;
+  margin-bottom: clamp(32px, 5vw, 48px);
+  
+  .pattern-grid {
+    max-width: min(320px, 72vw);
+  }
+  
+  // Larger grid for 8-tile game (grand level)
+  .pattern-grid.grid-4-col {
+    max-width: min(420px, 82vw);
+  }
 }
 
 .grid-label {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 6vw;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 16px;
+  margin-bottom: 2.5vw;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .pieces-container {
-  margin-top: 32px;
+  margin-top: clamp(24px, 4vw, 32px);
 }
 
 .pieces-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 2vw;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(16px, 3vw, 24px);
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 16px;
+  border-radius: clamp(12px, 2vw, 16px);
   backdrop-filter: blur(10px);
   pointer-events: auto;
 }
 
 .draggable-piece {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: clamp(40px, 11vw, 60px);
+  height: clamp(40px, 11vw, 60px);
+  min-width: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
+  border-radius: clamp(8px, 2vw, 12px);
+  border: clamp(2px, 0.5vw, 3px) solid rgba(255, 255, 255, 0.3);
   cursor: grab;
   transition: all 0.2s ease;
   display: flex;
@@ -157,6 +178,15 @@
   -webkit-touch-callout: none;
   pointer-events: auto !important;
   touch-action: manipulation;
+  box-sizing: border-box;
+  
+  // Smaller tiles for 4-tile game (beginner level)
+  .pieces-grid.grid-2-col & {
+    width: 14.5vw !important;
+    height: 14.5vw !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+  }
   
   &:hover {
     transform: scale(1.1) translateY(-4px);
@@ -202,7 +232,7 @@
 }
 
 .piece-hint {
-  font-size: 0.7rem;
+  font-size: 3.2vw;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 700;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
@@ -210,31 +240,34 @@
 
 .completion-card {
   text-align: center;
-  padding: 48px 24px;
+  padding: 6vw 4vw;
   background: rgba(0, 0, 0, 0.4);
-  border-radius: 24px;
+  border-radius: 4vw;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  max-width: min(600px, 95vw);
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .completion-icon {
-  font-size: 4rem;
-  margin-bottom: 16px;
+  font-size: 15vw;
+  margin-bottom: 2.5vw;
 }
 
 .completion-card h2 {
-  font-size: 2.5rem;
+  font-size: 8.5vw;
   font-weight: 800;
   color: #fff;
-  margin: 0 0 16px;
+  margin: 0 0 2.5vw;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .success-message,
 .error-message {
-  font-size: 1.3rem;
+  font-size: 5vw;
   color: rgba(255, 255, 255, 0.9);
-  margin: 0 0 32px;
+  margin: 0 0 5vw;
 }
 
 .error-message {
@@ -244,26 +277,27 @@
 .score-display {
   display: flex;
   justify-content: center;
-  gap: 48px;
-  margin: 32px 0;
-  padding: 24px;
+  gap: 5vw;
+  margin: clamp(24px, 4vw, 32px) 0;
+  padding: clamp(16px, 3vw, 24px);
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-radius: clamp(12px, 2vw, 16px);
+  flex-wrap: wrap;
 }
 
 .score-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 1vw;
 }
 
 .score-label {
-  font-size: 1rem;
+  font-size: 5.5vw;
   color: rgba(255, 255, 255, 0.7);
 }
 
 .score-value {
-  font-size: 2rem;
+  font-size: 7.5vw;
   font-weight: 800;
   color: #FFD700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -271,21 +305,26 @@
 
 .button-group {
   display: flex;
-  gap: 16px;
+  gap: 2.5vw;
   justify-content: center;
-  margin-top: 32px;
+  margin-top: clamp(24px, 5vw, 32px);
+  flex-wrap: wrap;
 }
 
 .btn-primary,
 .btn-secondary {
-  padding: 16px 32px;
+  padding: 2.5vw 4vw;
   border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
+  border-radius: 2vw;
+  font-size: 4.5vw;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 120px;
+  flex: 1 1 auto;
+  max-width: 300px;
+  box-sizing: border-box;
 }
 
 .btn-primary {
@@ -309,50 +348,102 @@
   }
 }
 
-@media (max-width: 768px) {
-  .content {
-    padding: 16px;
-  }
-
-  .phase-header h2 {
-    font-size: 1.5rem;
-  }
-
+// Additional responsive adjustments for very small screens
+@media (max-width: 480px) {
   .pattern-grid {
-    max-width: 100%;
-    gap: 6px;
-    padding: 12px;
+    max-width: 95vw;
+    padding: 2vw;
+    gap: 1vw;
   }
-
+  
   .pattern-cell {
-    border-width: 2px;
+    min-height: 50px;
   }
-
+  
   .draggable-piece {
-    width: 50px;
-    height: 50px;
+    width: 18vw;
+    height: 18vw;
+    min-width: 50px;
+    min-height: 50px;
   }
-
-  .completion-card {
-    padding: 32px 16px;
+  
+  .pieces-grid.grid-2-col .draggable-piece {
+    width: 14.5vw !important;
+    height: 14.5vw !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
   }
-
-  .completion-card h2 {
-    font-size: 2rem;
-  }
-
+  
   .score-display {
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
   }
-
+  
   .button-group {
     flex-direction: column;
+    
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      max-width: 100%;
+    }
   }
+}
 
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
+// Tablet and medium screens
+@media (min-width: 481px) and (max-width: 768px) {
+  .pattern-grid {
+    max-width: min(350px, 80vw);
+  }
+  
+  .draggable-piece {
+    width: 9vw;
+    height: 9vw;
+  }
+  
+  .pieces-grid.grid-2-col .draggable-piece {
+    width: 14.5vw !important;
+    height: 14.5vw !important;
+  }
+}
+
+// Landscape orientation adjustments for mobile
+@media (max-width: 768px) and (orientation: landscape) {
+  .phase-header {
+    margin-bottom: 2vh;
+  }
+  
+  .pattern-grid {
+    max-width: min(300px, 50vw);
+    margin-bottom: 2vh;
+  }
+  
+  .user-grid-container {
+    margin-bottom: 3vh;
+  }
+  
+  .pieces-container {
+    margin-top: 2vh;
+  }
+  
+  .completion-card {
+    padding: 3vh 2vw;
+  }
+}
+
+// Very large screens
+@media (min-width: 1200px) {
+  .content {
+    max-width: 900px;
+  }
+  
+  .pattern-grid {
+    max-width: 450px;
+  }
+  
+  .draggable-piece {
+    width: 60px;
+    height: 60px;
   }
 }
 

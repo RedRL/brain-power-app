@@ -9,7 +9,7 @@
       <p class="countdown">{{'pattern_will_hide_in'|t}} <strong>{{ getRemainingViewTime() }}</strong> {{'seconds'|t}}</p>
     </div>
     
-    <div class="pattern-grid" [style.grid-template-columns]="'repeat(' + gridSize + ', 1fr)'">
+    <div class="pattern-grid" [style.grid-template-columns]="'repeat(' + gridCols + ', 1fr)'">
       <div 
         *ngFor="let row of patternGrid"
         class="pattern-row">
@@ -34,7 +34,7 @@
     <!-- User's Grid -->
     <div class="user-grid-container">
       <div class="grid-label">{{'your_pattern'|t}}</div>
-      <div class="pattern-grid" [style.grid-template-columns]="'repeat(' + gridSize + ', 1fr)'">
+      <div class="pattern-grid" [class.grid-4-col]="gridCols === 4" [style.grid-template-columns]="'repeat(' + gridCols + ', 1fr)'">
         <div 
           *ngFor="let row of userGrid; let i = index"
           class="pattern-row">
@@ -53,7 +53,7 @@
     <!-- Available Pieces -->
     <div class="pieces-container">
       <div class="grid-label">{{'available_pieces'|t}}</div>
-      <div class="pieces-grid">
+      <div class="pieces-grid" [class.grid-2-col]="gridCols === 2">
         <div 
           *ngFor="let piece of availablePieces; trackBy: trackByPieceId"
           class="draggable-piece"

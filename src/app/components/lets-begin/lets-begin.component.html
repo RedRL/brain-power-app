@@ -22,41 +22,41 @@
   </div>
 
   <!-- Breathing Exercise Box -->
-  <div class="activity-box activity-box--2">
+  <div class="activity-box activity-box--2" [class.completed]="isBreathingExerciseCompleted">
     <div class="activity-header">
-      <span class="icon">air</span>
+      <span class="icon">{{ isBreathingExerciseCompleted ? 'check_circle' : 'air' }}</span>
       <h3>{{'breathing_exercise'|t}}</h3>
     </div>
     <p>{{'exercise_breathing_description'|t}}</p>
-    <button class="btn-activity" (click)="startBreathingExercise()">
-      <span class="icon">play_arrow</span>
-      {{'start_breathing_exercise'|t}}
+    <button class="btn-activity" [class.btn-activity-completed]="isBreathingExerciseCompleted" (click)="startBreathingExercise()">
+      <span class="icon">{{ isBreathingExerciseCompleted ? 'refresh' : 'play_arrow' }}</span>
+      {{ isBreathingExerciseCompleted ? ('retake_breathing_exercise'|t) : ('start_breathing_exercise'|t) }}
     </button>
   </div>
 
   <!-- Feldenkrais Movement Box -->
-  <div class="activity-box activity-box--3">
+  <div class="activity-box activity-box--3" [class.completed]="isFeldenkraisExerciseCompleted">
     <div class="activity-header">
-      <span class="icon">accessibility_new</span>
+      <span class="icon">{{ isFeldenkraisExerciseCompleted ? 'check_circle' : 'accessibility_new' }}</span>
       <h3>{{'feldenkrais_movement'|t}}</h3>
     </div>
     <p>{{'feldenkrais_description'|t}}</p>
-    <button class="btn-activity" (click)="startFeldenkraisExercise()">
-      <span class="icon">play_arrow</span>
-      {{'start_feldenkrais_exercise'|t}}
+    <button class="btn-activity" [class.btn-activity-completed]="isFeldenkraisExerciseCompleted" (click)="startFeldenkraisExercise()">
+      <span class="icon">{{ isFeldenkraisExerciseCompleted ? 'refresh' : 'play_arrow' }}</span>
+      {{ isFeldenkraisExerciseCompleted ? ('retake_feldenkrais_exercise'|t) : ('start_feldenkrais_exercise'|t) }}
     </button>
   </div>
 
   <!-- Game Box -->
-  <div class="activity-box activity-box--4">
+  <div class="activity-box activity-box--4" [class.completed]="isMemoryGameCompleted">
     <div class="activity-header">
-      <span class="icon">psychology</span>
+      <span class="icon">{{ isMemoryGameCompleted ? 'check_circle' : 'psychology' }}</span>
       <h3>{{'game'|t}}</h3>
     </div>
     <p>{{'game_description'|t}}</p>
-    <button class="btn-activity" (click)="startGame()">
-      <span class="icon">play_arrow</span>
-      {{'start_game'|t}}
+    <button class="btn-activity" [class.btn-activity-completed]="isMemoryGameCompleted" (click)="startGame()">
+      <span class="icon">{{ isMemoryGameCompleted ? 'refresh' : 'play_arrow' }}</span>
+      {{ isMemoryGameCompleted ? ('retake_game'|t) : ('start_game'|t) }}
     </button>
   </div>
 

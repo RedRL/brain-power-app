@@ -1,11 +1,12 @@
 .content {
-  padding: 24px;
-  max-width: 600px;
+  padding: 3vw;
+  max-width: min(600px, 95vw);
   margin: 0 auto;
   min-height: calc(100vh - 100px);
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .options-container {
@@ -14,17 +15,17 @@
 }
 
 .options-container h2 {
-  font-size: 2rem;
+  font-size: 6.5vw;
   font-weight: 800;
   color: #fff;
-  margin: 0 0 16px;
+  margin: 0 0 2vw;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .options-container p {
-  font-size: 1.1rem;
+  font-size: 5.5vw;
   color: rgba(255, 255, 255, 0.8);
-  margin: 0 0 48px;
+  margin: 0 0 5vw;
 }
 
 .button-group {
@@ -38,20 +39,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 24px 32px;
+  gap: 2vw;
+  padding: 4vw 4.5vw;
   border: none;
-  border-radius: 16px;
-  font-size: 1.2rem;
+  border-radius: 3.5vw;
+  font-size: 5vw;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
+  min-height: 6vw;
+  box-sizing: border-box;
 }
 
 .option-btn .icon {
-  font-size: 2rem;
+  font-size: 7vw;
 }
 
 .option-btn:hover {
@@ -73,24 +76,188 @@
   box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
 }
 
-@media (max-width: 768px) {
-  .options-container h2 {
-    font-size: 1.5rem;
-  }
+.level-btn {
+  display: flex;
+  align-items: center;
+  padding: 5vw 4.5vw;
+  border: none;
+  border-radius: 3.5vw;
+  font-size: 5vw;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  text-align: left;
+  min-height: 12vw;
+  box-sizing: border-box;
+  justify-content: flex-start;
+}
 
-  .options-container p {
-    font-size: 1rem;
-    margin-bottom: 32px;
-  }
+.level-content {
+  display: flex;
+  align-items: center;
+  gap: 2.5vw;
+  width: 100%;
+}
 
-  .option-btn {
-    padding: 20px 24px;
-    font-size: 1.1rem;
-  }
+// LTR: stars left, text right (reverse HTML order)
+html:not([dir="rtl"]) .level-content,
+body:not(.lang-he) .level-content {
+  flex-direction: row-reverse;
+}
 
-  .option-btn .icon {
-    font-size: 1.8rem;
+// RTL: text right, stars left (natural HTML order)
+html[dir="rtl"] .level-content,
+body.lang-he .level-content {
+  flex-direction: row !important;
+  direction: rtl !important;
+}
+
+.level-icon {
+  font-size: 7vw;
+  min-width: 8vw;
+  text-align: center;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  direction: ltr; // Keep stars in LTR order for LTR languages
+  
+  &.pyramid-stars {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    gap: 0.3vw;
+    direction: ltr;
+    
+    .star-row {
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
+      direction: ltr;
+      
+      &.top {
+        font-size: 5.5vw;
+      }
+      
+      &.bottom {
+        font-size: 5.5vw;
+      }
+    }
   }
+}
+
+[dir="rtl"] .level-icon {
+  direction: rtl; // Reverse star order in RTL so they accumulate right-to-left
+  
+  &.pyramid-stars {
+    direction: rtl;
+    
+    .star-row {
+      direction: rtl;
+      flex-direction: row-reverse; // Ensure stars display right-to-left
+    }
+  }
+}
+
+.level-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vw;
+  flex: 1;
+  text-align: left;
+  align-items: flex-start;
+}
+
+html[dir="rtl"] .level-btn,
+.lang-he .level-btn {
+  text-align: right;
+  direction: rtl;
+}
+
+html[dir="rtl"] .level-info,
+.lang-he .level-info {
+  text-align: right !important;
+  align-items: flex-end !important;
+}
+
+.level-name {
+  font-size: 5.5vw;
+  font-weight: 800;
+  display: block;
+  width: 100%;
+}
+
+:host-context(.lang-he) .level-name {
+  text-align: right;
+}
+
+.level-desc {
+  font-size: 4.5vw;
+  opacity: 0.8;
+  font-weight: 400;
+  display: block;
+  width: 100%;
+}
+
+:host-context(.lang-he) .level-desc {
+  text-align: right;
+}
+
+.level-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.level-btn:active {
+  transform: translateY(-2px);
+}
+
+.beginner-btn {
+  background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+  border: 2px solid rgba(76, 175, 80, 0.3);
+}
+
+.beginner-btn:hover {
+  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.5);
+}
+
+.advanced-btn {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+  border: 2px solid rgba(255, 152, 0, 0.3);
+}
+
+.advanced-btn:hover {
+  box-shadow: 0 8px 24px rgba(255, 152, 0, 0.5);
+}
+
+.grand-btn {
+  background: linear-gradient(135deg, #F44336 0%, #C62828 100%);
+  border: 2px solid rgba(244, 67, 54, 0.3);
+}
+
+.grand-btn:hover {
+  box-shadow: 0 8px 24px rgba(244, 67, 54, 0.5);
+}
+
+.back-btn {
+  margin-top: 4vw;
+  padding: 2.5vw 4vw;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 2vw;
+  font-size: 4vw;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
 }
 
 

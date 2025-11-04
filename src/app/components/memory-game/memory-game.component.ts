@@ -33,7 +33,9 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
   phase: 'viewing' | 'playing' | 'completed' | 'failed' = 'viewing';
   
   // Grid configuration based on level
-  gridSize: number = 3;
+  gridSize: number = 2;
+  gridRows: number = 2;
+  gridCols: number = 2;
   viewDuration: number = 5000; // milliseconds
   
   // Pattern grid (the answer)
@@ -55,6 +57,7 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
   dragStartTimer: any = null;
   dragStarted: boolean = false;
   mouseDownPosition: { x: number; y: number } = { x: 0, y: 0 };
+  currentDropZone: HTMLElement | null = null;
   
   // Bound event handlers for proper cleanup
   private boundMouseMove: ((e: MouseEvent) => void) | null = null;
@@ -147,16 +150,19 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     // Set difficulty based on level
     switch (this.level) {
       case 'beginner':
-        this.gridSize = 3;
-        this.viewDuration = 5000;
+        this.gridRows = 2;
+        this.gridCols = 2; // 2x2 = 4 tiles
+        this.viewDuration = 5000; // 5 seconds
         break;
       case 'advanced':
-        this.gridSize = 4;
-        this.viewDuration = 6000;
+        this.gridRows = 2;
+        this.gridCols = 3; // 2x3 = 6 tiles
+        this.viewDuration = 10000; // 10 seconds
         break;
       case 'grand':
-        this.gridSize = 5;
-        this.viewDuration = 7000;
+        this.gridRows = 2;
+        this.gridCols = 4; // 2x4 = 8 tiles
+        this.viewDuration = 15000; // 15 seconds
         break;
     }
 
@@ -170,11 +176,30 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.patternGrid = [];
     const usedColors: string[] = [];
     
-    for (let row = 0; row < this.gridSize; row++) {
+    // Define color palette based on level with very distinct colors
+    let availableColors: string[];
+    switch (this.level) {
+      case 'beginner':
+        // 4 very distinct colors: Red, Blue, Green, Orange
+        availableColors = ['#E74C3C', '#3498DB', '#2ECC71', '#FF9800'];
+        break;
+      case 'advanced':
+        // 6 colors: beginner + Purple, Yellow
+        availableColors = ['#E74C3C', '#3498DB', '#2ECC71', '#FF9800', '#9B59B6', '#F1C40F'];
+        break;
+      case 'grand':
+        // 8 colors: beginner + Purple, Yellow, Pink, Teal
+        availableColors = ['#E74C3C', '#3498DB', '#2ECC71', '#FF9800', '#9B59B6', '#F1C40F', '#E91E63', '#00BCD4'];
+        break;
+      default:
+        availableColors = this.colors;
+    }
+    
+    for (let row = 0; row < this.gridRows; row++) {
       this.patternGrid[row] = [];
-      for (let col = 0; col < this.gridSize; col++) {
-        // Use random colors but ensure some variety
-        const color = this.colors[Math.floor(Math.random() * this.colors.length)];
+      for (let col = 0; col < this.gridCols; col++) {
+        // Use random colors from available palette
+        const color = availableColors[Math.floor(Math.random() * availableColors.length)];
         usedColors.push(color);
         this.patternGrid[row][col] = {
           row,
@@ -185,9 +210,12 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     
-    // Ensure at least 3-4 different colors are used
+    // Ensure at least 3 different colors are used (for variety)
     const uniqueColors = [...new Set(usedColors)];
-    if (uniqueColors.length < 3) {
+    const totalTiles = this.gridRows * this.gridCols;
+    const minColors = Math.min(3, totalTiles);
+    
+    if (uniqueColors.length < minColors) {
       // Regenerate with more variety
       this.generatePattern();
     }
@@ -195,9 +223,9 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
 
   initializeUserGrid() {
     this.userGrid = [];
-    for (let row = 0; row < this.gridSize; row++) {
+    for (let row = 0; row < this.gridRows; row++) {
       this.userGrid[row] = [];
-      for (let col = 0; col < this.gridSize; col++) {
+      for (let col = 0; col < this.gridCols; col++) {
         this.userGrid[row][col] = {
           row,
           col,
@@ -385,6 +413,12 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggedElement.style.transform = 'scale(1.2)';
     this.draggedElement.style.cursor = 'grabbing';
     
+    // Ensure all child elements also ignore pointer events
+    const allChildren = this.draggedElement.querySelectorAll('*');
+    allChildren.forEach(child => {
+      (child as HTMLElement).style.pointerEvents = 'none';
+    });
+    
     const rect = target.getBoundingClientRect();
     this.dragOffset.x = this.mouseDownPosition.x - rect.left;
     this.dragOffset.y = this.mouseDownPosition.y - rect.top;
@@ -414,6 +448,12 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggedElement.style.opacity = '0.8';
     this.draggedElement.style.transform = 'scale(1.2)';
     this.draggedElement.style.cursor = 'grabbing';
+    
+    // Ensure all child elements also ignore pointer events
+    const allChildren = this.draggedElement.querySelectorAll('*');
+    allChildren.forEach(child => {
+      (child as HTMLElement).style.pointerEvents = 'none';
+    });
     
     const rect = target.getBoundingClientRect();
     this.dragOffset.x = touch.clientX - rect.left;
@@ -453,26 +493,31 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggedElement.style.left = (event.clientX - this.dragOffset.x) + 'px';
     this.draggedElement.style.top = (event.clientY - this.dragOffset.y) + 'px';
     
-    // Check which drop zone we're over
-    const elementBelow = document.elementFromPoint(event.clientX, event.clientY);
-    if (elementBelow) {
-      const dropZone = elementBelow.closest('.drop-zone') as HTMLElement;
-      if (dropZone) {
-        // Remove drag-over from all zones
-        document.querySelectorAll('.drag-over').forEach(el => {
-          if (el !== dropZone) {
-            el.classList.remove('drag-over');
-          }
-        });
-        
-        // Always allow drag-over for any drop zone
-        dropZone.classList.add('drag-over');
-      } else {
-        // Remove drag-over from all zones
-        document.querySelectorAll('.drag-over').forEach(el => {
-          el.classList.remove('drag-over');
-        });
+    // Check which drop zone we're over using coordinates
+    const dropZones = document.querySelectorAll<HTMLElement>('.drop-zone');
+    let foundZone: HTMLElement | null = null;
+    
+    dropZones.forEach((zone: HTMLElement) => {
+      const rect = zone.getBoundingClientRect();
+      if (event.clientX >= rect.left && event.clientX <= rect.right &&
+          event.clientY >= rect.top && event.clientY <= rect.bottom) {
+        foundZone = zone;
       }
+    });
+    
+    // Only update if we moved to a different drop zone
+    if (foundZone !== this.currentDropZone) {
+      // Remove drag-over from previous zone
+      if (this.currentDropZone) {
+        this.currentDropZone.classList.remove('drag-over');
+      }
+      
+      // Add drag-over to new zone
+      if (foundZone !== null) {
+        (foundZone as HTMLElement).classList.add('drag-over');
+      }
+      
+      this.currentDropZone = foundZone;
     }
   }
   
@@ -505,26 +550,31 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggedElement.style.left = (touch.clientX - this.dragOffset.x) + 'px';
     this.draggedElement.style.top = (touch.clientY - this.dragOffset.y) + 'px';
     
-    // Check which drop zone we're over
-    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (elementBelow) {
-      const dropZone = elementBelow.closest('.drop-zone') as HTMLElement;
-      if (dropZone) {
-        // Remove drag-over from all zones
-        document.querySelectorAll('.drag-over').forEach(el => {
-          if (el !== dropZone) {
-            el.classList.remove('drag-over');
-          }
-        });
-        
-        // Always allow drag-over for any drop zone
-        dropZone.classList.add('drag-over');
-      } else {
-        // Remove drag-over from all zones
-        document.querySelectorAll('.drag-over').forEach(el => {
-          el.classList.remove('drag-over');
-        });
+    // Check which drop zone we're over using coordinates
+    const dropZones = document.querySelectorAll<HTMLElement>('.drop-zone');
+    let foundZone: HTMLElement | null = null;
+    
+    dropZones.forEach((zone: HTMLElement) => {
+      const rect = zone.getBoundingClientRect();
+      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+          touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+        foundZone = zone;
       }
+    });
+    
+    // Only update if we moved to a different drop zone
+    if (foundZone !== this.currentDropZone) {
+      // Remove drag-over from previous zone
+      if (this.currentDropZone) {
+        this.currentDropZone.classList.remove('drag-over');
+      }
+      
+      // Add drag-over to new zone
+      if (foundZone !== null) {
+        (foundZone as HTMLElement).classList.add('drag-over');
+      }
+      
+      this.currentDropZone = foundZone;
     }
   }
   
@@ -611,15 +661,25 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
     
-    // Find the drop zone we're over
-    const elementBelow = document.elementFromPoint(event.clientX, event.clientY);
-    if (elementBelow && this.draggedPiece) {
-      const dropZone = elementBelow.closest('.drop-zone') as HTMLElement;
-      if (dropZone) {
-        dropZone.classList.remove('drag-over');
+    // Find the drop zone we're over using coordinates
+    if (this.draggedPiece) {
+      const dropZones = document.querySelectorAll<HTMLElement>('.drop-zone');
+      let dropZone: HTMLElement | null = null;
+      
+      dropZones.forEach((zone: HTMLElement) => {
+        const rect = zone.getBoundingClientRect();
+        if (event.clientX >= rect.left && event.clientX <= rect.right &&
+            event.clientY >= rect.top && event.clientY <= rect.bottom) {
+          dropZone = zone;
+        }
+      });
+      
+      if (dropZone !== null) {
+        const zone = dropZone as HTMLElement;
+        zone.classList.remove('drag-over');
         
-        const row = parseInt(dropZone.getAttribute('data-row') || '0');
-        const col = parseInt(dropZone.getAttribute('data-col') || '0');
+        const row = parseInt(zone.getAttribute('data-row') || '0');
+        const col = parseInt(zone.getAttribute('data-col') || '0');
         
         // Place the piece (allow replacing existing pieces)
         this.userGrid[row][col].color = this.draggedPiece.color;
@@ -640,9 +700,10 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     
     // Remove drag-over classes
-    document.querySelectorAll('.drag-over').forEach(el => {
-      el.classList.remove('drag-over');
-    });
+    if (this.currentDropZone) {
+      this.currentDropZone.classList.remove('drag-over');
+      this.currentDropZone = null;
+    }
     
     // Reset state
     this.isDragging = false;
@@ -704,15 +765,25 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     });
     
-    // Find the drop zone we're over
-    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-    if (elementBelow && this.draggedPiece) {
-      const dropZone = elementBelow.closest('.drop-zone') as HTMLElement;
-      if (dropZone) {
-        dropZone.classList.remove('drag-over');
+    // Find the drop zone we're over using coordinates
+    if (this.draggedPiece) {
+      const dropZones = document.querySelectorAll<HTMLElement>('.drop-zone');
+      let dropZone: HTMLElement | null = null;
+      
+      dropZones.forEach((zone: HTMLElement) => {
+        const rect = zone.getBoundingClientRect();
+        if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+            touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+          dropZone = zone;
+        }
+      });
+      
+      if (dropZone !== null) {
+        const zone = dropZone as HTMLElement;
+        zone.classList.remove('drag-over');
         
-        const row = parseInt(dropZone.getAttribute('data-row') || '0');
-        const col = parseInt(dropZone.getAttribute('data-col') || '0');
+        const row = parseInt(zone.getAttribute('data-row') || '0');
+        const col = parseInt(zone.getAttribute('data-col') || '0');
         
         // Place the piece (allow replacing existing pieces)
         this.userGrid[row][col].color = this.draggedPiece.color;
@@ -733,9 +804,10 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     
     // Remove drag-over classes
-    document.querySelectorAll('.drag-over').forEach(el => {
-      el.classList.remove('drag-over');
-    });
+    if (this.currentDropZone) {
+      this.currentDropZone.classList.remove('drag-over');
+      this.currentDropZone = null;
+    }
     
     // Reset state
     this.isDragging = false;
@@ -865,15 +937,15 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     
     // Check if pattern matches
     let matches = 0;
-    for (let row = 0; row < this.gridSize; row++) {
-      for (let col = 0; col < this.gridSize; col++) {
+    for (let row = 0; row < this.gridRows; row++) {
+      for (let col = 0; col < this.gridCols; col++) {
         if (this.userGrid[row][col].color === this.patternGrid[row][col].color) {
           matches++;
         }
       }
     }
     
-    const totalCells = this.gridSize * this.gridSize;
+    const totalCells = this.gridRows * this.gridCols;
     const accuracy = matches / totalCells;
     
     if (accuracy === 1) {
@@ -896,8 +968,15 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
 
   markAsCompleted() {
     const durationSec = Math.floor(this.completionTime / 1000);
-    // Store completion in data service if needed
-    // this.dataService.addCompletion(...);
+    // Store completion in data service
+    const completion = {
+      date: new Date().toISOString().split('T')[0],
+      exerciseId: 'memory',
+      level: this.level,
+      durationSec: durationSec,
+      score: this.score
+    };
+    this.dataService.addCompletion(completion);
   }
 
   restartGame() {

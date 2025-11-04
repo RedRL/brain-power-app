@@ -13,6 +13,7 @@ import { TPipe } from '../../shared/pipes/t.pipe';
 })
 export class GameOptionsComponent {
   level: 'beginner' | 'advanced' | 'grand' = 'beginner';
+  showLevelSelection: boolean = false;
 
   constructor(
     private router: Router,
@@ -24,11 +25,22 @@ export class GameOptionsComponent {
   }
 
   selectMemoryGame() {
+    this.showLevelSelection = true;
+  }
+
+  selectLevel(level: 'beginner' | 'advanced' | 'grand') {
+    this.level = level;
     this.router.navigate(['/memory-game'], {
       queryParams: { level: this.level }
     });
   }
+
+  goBack() {
+    this.showLevelSelection = false;
+  }
 }
+
+
 
 
 

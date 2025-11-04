@@ -566,6 +566,9 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
             this.completedActivities.add(activityKey);
             this.showCongratulations = true;
             
+            // Mark the entire music session as completed when any activity is completed
+            this.markMusicSessionCompleted();
+            
             // Hide congratulations after 3 seconds
             setTimeout(() => {
               this.showCongratulations = false;
@@ -999,6 +1002,9 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
       this.completedActivities.add(activityKey);
     }
     
+    // Mark the entire music session as completed when any activity is completed
+    this.markMusicSessionCompleted();
+    
     setTimeout(() => {
       this.showCongratulations = false;
     }, 3000);
@@ -1379,6 +1385,9 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
       this.activityProgress[activityKey] = 100;
       localStorage.setItem(`progress_${activityKey}`, '100');
     }
+    
+    // Mark the entire music session as completed when any activity is completed
+    this.markMusicSessionCompleted();
     
     setTimeout(() => {
       this.showCongratulations = false;

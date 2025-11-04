@@ -428,6 +428,7 @@ label {
 ion-app, ion-content, .ion-page {
   overflow-y: auto !important;
   height: 100vh !important;
+  justify-content: flex-start !important;
 }
 
 /* Ensure main content can scroll */

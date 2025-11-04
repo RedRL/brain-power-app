@@ -1,14 +1,56 @@
 <app-header [title]="'game'|t"></app-header>
 
 <section class="content">
-  <div class="options-container">
+  <!-- Game Type Selection -->
+  <div class="options-container" *ngIf="!showLevelSelection">
     <h2>{{'choose_game_type'|t}}</h2>
     <p>{{'select_game_preference'|t}}</p>
 
     <div class="button-group">
       <button class="option-btn memory-game-btn" (click)="selectMemoryGame()">
-        <span class="icon">memory</span>
+        <span class="icon">🧩</span>
         <span class="btn-text">{{'memory_game_image_patterns'|t}}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Level Selection -->
+  <div class="options-container" *ngIf="showLevelSelection">
+    <h2>{{'select_difficulty'|t}}</h2>
+    <p>{{'choose_your_level'|t}}</p>
+
+    <div class="button-group">
+      <button class="level-btn beginner-btn" (click)="selectLevel('beginner')">
+        <div class="level-content">
+          <div class="level-info">
+            <span class="level-name">{{'beginner'|t}}</span>
+            <span class="level-desc">{{'beginner_desc'|t}}</span>
+          </div>
+          <span class="level-icon">⭐</span>
+        </div>
+      </button>
+
+      <button class="level-btn advanced-btn" (click)="selectLevel('advanced')">
+        <div class="level-content">
+          <div class="level-info">
+            <span class="level-name">{{'advanced'|t}}</span>
+            <span class="level-desc">{{'advanced_desc'|t}}</span>
+          </div>
+          <span class="level-icon">⭐⭐</span>
+        </div>
+      </button>
+
+      <button class="level-btn grand-btn" (click)="selectLevel('grand')">
+        <div class="level-content">
+          <div class="level-info">
+            <span class="level-name">{{'grand_master'|t}}</span>
+            <span class="level-desc">{{'grand_master_desc'|t}}</span>
+          </div>
+          <span class="level-icon pyramid-stars">
+            <span class="star-row top">⭐</span>
+            <span class="star-row bottom">⭐⭐</span>
+          </span>
+        </div>
       </button>
     </div>
   </div>
