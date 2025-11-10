@@ -1750,7 +1750,7 @@ const he: Dict = {
   pause_video: 'השהו',
   rewind_5_seconds: '5 שניות\nאחורה',
   video_progress: 'התקדמות הצפייה',
-  congratulations: '!כל הכבוד',
+  congratulations: 'כל הכבוד!',
   daily_routine_completed: 'השלמת את כל הפעילויות היומיות שלך!',
   ok: 'אישור',
   video_completed_message: 'סיימתם לצפות בכל הסרטון בהצלחה. עבודה מעולה!',

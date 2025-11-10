@@ -350,11 +350,11 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     document.addEventListener('mousemove', this.boundMouseMove, true);
     document.addEventListener('mouseup', this.boundMouseUp, true);
     
-    // Start drag after a short delay (300ms for better press-and-hold feel)
+    // Start drag after a short delay (100ms for better press-and-hold feel)
     this.dragStartTimer = setTimeout(() => {
       target.classList.remove('press-hold');
       this.startDraggingMouse(event, target);
-    }, 300);
+    }, 100);
   }
   
   onPieceTouchStart(event: TouchEvent, piece: DraggablePiece) {
@@ -390,11 +390,11 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     document.addEventListener('touchmove', this.boundTouchMove, { passive: false, capture: true });
     document.addEventListener('touchend', this.boundTouchEnd, true);
     
-    // Start drag after a short delay (300ms for better press-and-hold feel)
+    // Start drag after a short delay (100ms for better press-and-hold feel)
     this.dragStartTimer = setTimeout(() => {
       target.classList.remove('press-hold');
       this.startDraggingTouch(touch, target);
-    }, 300);
+    }, 100);
   }
   
   startDraggingMouse(event: MouseEvent, target: HTMLElement) {
@@ -410,23 +410,29 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggedElement.style.pointerEvents = 'none';
     this.draggedElement.style.zIndex = '10000';
     this.draggedElement.style.opacity = '0.8';
-    this.draggedElement.style.transform = 'scale(1.2)';
     this.draggedElement.style.cursor = 'grabbing';
+    this.draggedElement.style.transition = 'none';
+    this.draggedElement.style.willChange = 'transform';
     
     // Ensure all child elements also ignore pointer events
     const allChildren = this.draggedElement.querySelectorAll('*');
     allChildren.forEach(child => {
       (child as HTMLElement).style.pointerEvents = 'none';
+      (child as HTMLElement).style.transition = 'none';
     });
     
     const rect = target.getBoundingClientRect();
     this.dragOffset.x = this.mouseDownPosition.x - rect.left;
     this.dragOffset.y = this.mouseDownPosition.y - rect.top;
     
-    this.draggedElement.style.left = (this.mouseDownPosition.x - this.dragOffset.x) + 'px';
-    this.draggedElement.style.top = (this.mouseDownPosition.y - this.dragOffset.y) + 'px';
+    const initialX = this.mouseDownPosition.x - this.dragOffset.x;
+    const initialY = this.mouseDownPosition.y - this.dragOffset.y;
+    
+    this.draggedElement.style.left = initialX + 'px';
+    this.draggedElement.style.top = initialY + 'px';
     this.draggedElement.style.width = rect.width + 'px';
     this.draggedElement.style.height = rect.height + 'px';
+    this.draggedElement.style.transform = 'scale(1.2)';
     
     document.body.appendChild(this.draggedElement);
     
@@ -446,23 +452,29 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
     this.draggedElement.style.pointerEvents = 'none';
     this.draggedElement.style.zIndex = '10000';
     this.draggedElement.style.opacity = '0.8';
-    this.draggedElement.style.transform = 'scale(1.2)';
     this.draggedElement.style.cursor = 'grabbing';
+    this.draggedElement.style.transition = 'none';
+    this.draggedElement.style.willChange = 'transform';
     
     // Ensure all child elements also ignore pointer events
     const allChildren = this.draggedElement.querySelectorAll('*');
     allChildren.forEach(child => {
       (child as HTMLElement).style.pointerEvents = 'none';
+      (child as HTMLElement).style.transition = 'none';
     });
     
     const rect = target.getBoundingClientRect();
     this.dragOffset.x = touch.clientX - rect.left;
     this.dragOffset.y = touch.clientY - rect.top;
     
-    this.draggedElement.style.left = (touch.clientX - this.dragOffset.x) + 'px';
-    this.draggedElement.style.top = (touch.clientY - this.dragOffset.y) + 'px';
+    const initialX = touch.clientX - this.dragOffset.x;
+    const initialY = touch.clientY - this.dragOffset.y;
+    
+    this.draggedElement.style.left = initialX + 'px';
+    this.draggedElement.style.top = initialY + 'px';
     this.draggedElement.style.width = rect.width + 'px';
     this.draggedElement.style.height = rect.height + 'px';
+    this.draggedElement.style.transform = 'scale(1.2)';
     
     document.body.appendChild(this.draggedElement);
     
