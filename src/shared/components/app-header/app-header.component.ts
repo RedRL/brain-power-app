@@ -61,7 +61,39 @@ export class AppHeaderComponent implements OnInit, OnChanges {
     }
   }
 
-  goBack() { if (this.showBack) this.location.back(); }
+  goBack() { 
+    if (!this.showBack) return;
+    
+    const currentUrl = this.router.url;
+    
+    // Define navigation hierarchy based on routes
+    if (currentUrl === '/lets-begin') {
+      // From "Let's Begin" page, go back to home (main menu)
+      this.router.navigate(['/home']);
+    } else if (currentUrl.startsWith('/breathing-session') || 
+               currentUrl.startsWith('/feldenkrais-session') || 
+               currentUrl.startsWith('/memory-game') ||
+               currentUrl.startsWith('/music-session') ||
+               currentUrl.startsWith('/breathing-options') ||
+               currentUrl.startsWith('/feldenkrais-options') ||
+               currentUrl.startsWith('/game-options')) {
+      // From exercise/option pages, go back to "Let's Begin"
+      this.router.navigate(['/lets-begin']);
+    } else if (currentUrl.startsWith('/intro-daily-routine') ||
+               currentUrl.startsWith('/ai-assistant') ||
+               currentUrl.startsWith('/goals') ||
+               currentUrl.startsWith('/knowledge') ||
+               currentUrl.startsWith('/contact') ||
+               currentUrl.startsWith('/personal-info') ||
+               currentUrl.startsWith('/settings')) {
+      // From other pages accessible from home, go back to home
+      this.router.navigate(['/home']);
+    } else {
+      // Fallback to browser history for other routes
+      this.location.back();
+    }
+  }
+  
   goHome() { if (this.showHome) this.router.navigate(['/home']); }
   goToPersonalInfo() { this.router.navigate(['/personal-info']); }
 } 
