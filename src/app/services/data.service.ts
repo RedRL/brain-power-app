@@ -29,6 +29,7 @@ export interface Article {
   title: string;
   excerpt: string;
   body: string;
+  url?: string;
 }
 
 export interface Exercise {
@@ -132,25 +133,29 @@ export class DataService {
         id: '1',
         title: this.translateService.t('article_nutrition_title'),
         excerpt: this.translateService.t('article_nutrition_excerpt'),
-        body: this.translateService.t('article_nutrition_body')
+        body: this.translateService.t('article_nutrition_body'),
+        url: 'https://www.health.harvard.edu/topics/diet-and-weight-loss'
       },
       {
         id: '2',
         title: this.translateService.t('article_anxiety_title'),
         excerpt: this.translateService.t('article_anxiety_excerpt'),
-        body: this.translateService.t('article_anxiety_body')
+        body: this.translateService.t('article_anxiety_body'),
+        url: 'https://www.apa.org/topics/anxiety'
       },
       {
         id: '3',
         title: this.translateService.t('article_sleep_title'),
         excerpt: this.translateService.t('article_sleep_excerpt'),
-        body: this.translateService.t('article_sleep_body')
+        body: this.translateService.t('article_sleep_body'),
+        url: 'https://www.sleepfoundation.org/sleep-hygiene'
       },
       {
         id: '4',
         title: this.translateService.t('article_feldenkrais_title'),
         excerpt: this.translateService.t('article_feldenkrais_excerpt'),
-        body: this.translateService.t('article_feldenkrais_body')
+        body: this.translateService.t('article_feldenkrais_body'),
+        url: 'https://feldenkrais.com/about-the-feldenkrais-method/'
       }
     ];
   }

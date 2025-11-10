@@ -1,59 +1,179 @@
-﻿/* Most styles are in global theme.css */
+﻿/* Responsive styles using viewport units */
+
+.content {
+  padding-top: clamp(40px, 8vw, 80px) !important;
+}
 
 .knowledge-intro {
-  margin-bottom: 20px;
+  margin-bottom: clamp(16px, 3vw, 24px);
 }
 
 .knowledge-intro h2 {
-  font-size: 1.5rem;
-  margin: 0 0 8px;
+  font-size: clamp(28px, 7vw, 44px);
+  margin: 0 0 clamp(10px, 2.5vw, 18px);
   font-weight: 800;
   text-transform: none;
-  }
-  
-  .articles-list {
-  margin-bottom: 20px;
-  }
-  
+}
+
+.knowledge-intro p {
+  font-size: clamp(18px, 5.5vw, 26px);
+  line-height: 1.6;
+}
+
+.articles-list {
+  margin-bottom: clamp(16px, 3vw, 24px);
+}
+
+.articles-list .section-card {
+  margin-bottom: clamp(24px, 5vw, 40px);
+}
+
+.knowledge-tips {
+  margin-top: clamp(24px, 5vw, 40px);
+}
+
+.section-card {
+  padding: clamp(20px, 4.5vw, 32px);
+  width: 100%;
+  max-width: 100%;
+}
+
 .section-card h3 {
-  font-size: 1.2rem;
-  margin: 0 0 8px;
+  font-size: clamp(24px, 6.5vw, 36px);
+  margin: 0 0 clamp(10px, 2.5vw, 16px);
   font-weight: 700;
   text-transform: none;
   color: var(--primary);
 }
-    
-    .article-excerpt {
-  color: #666;
-  margin-bottom: 12px;
+
+.article-excerpt {
+  color: #000;
+  margin-bottom: clamp(14px, 3.5vw, 20px);
+  font-size: clamp(18px, 5.5vw, 24px);
+  line-height: 1.5;
 }
 
 .article-details {
-  margin-top: 12px;
-    }
-    
+  margin-top: clamp(10px, 2.5vw, 16px);
+}
+
 .article-details summary {
   cursor: pointer;
   color: var(--primary);
   font-weight: 600;
-  padding: 8px 0;
-  }
-  
+  padding: clamp(10px, 2.5vw, 14px) 0;
+  font-size: clamp(18px, 5.5vw, 24px);
+}
+
 .article-details summary:hover {
   text-decoration: underline;
 }
 
 .article-body {
-  padding: 12px 0;
+  padding: clamp(14px, 3.5vw, 20px) 0;
   line-height: 1.6;
-    }
-    
-    .tips-list {
-      margin: 0;
-  padding-left: 24px;
+  font-size: clamp(18px, 5.5vw, 23px);
+  white-space: pre-wrap;
+  color: #000;
+}
+
+.external-link {
+  display: inline-block;
+  margin-top: clamp(16px, 4vw, 28px);
+  padding: clamp(12px, 3vw, 16px) clamp(18px, 4.5vw, 28px);
+  background: var(--primary);
+  color: white;
+  text-decoration: none;
+  border-radius: clamp(8px, 2.5vw, 12px);
+  font-weight: 600;
+  font-size: clamp(18px, 5.5vw, 23px);
+  transition: all 0.2s ease;
+}
+
+.external-link:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.tips-list {
+  margin: 0;
+  padding-left: clamp(20px, 4vw, 32px);
 }
 
 .tips-list li {
-  margin-bottom: 8px;
-  line-height: 1.5;
+  margin-bottom: clamp(10px, 2.5vw, 14px);
+  line-height: 1.6;
+  font-size: clamp(18px, 5.5vw, 24px);
+  color: #000;
+}
+
+// Responsive adjustments for different screen sizes
+@media (max-width: 480px) {
+  .knowledge-intro h2 {
+    font-size: 8vw;
+  }
+  
+  .knowledge-intro p {
+    font-size: 6vw;
+  }
+  
+  .section-card h3 {
+    font-size: 7.5vw;
+  }
+  
+  .article-excerpt,
+  .article-details summary,
+  .article-body,
+  .external-link,
+  .tips-list li {
+    font-size: 6vw;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .knowledge-intro h2 {
+    font-size: 6.5vw;
+  }
+  
+  .knowledge-intro p {
+    font-size: 5vw;
+  }
+  
+  .section-card h3 {
+    font-size: 6vw;
+  }
+  
+  .article-excerpt,
+  .article-details summary,
+  .article-body,
+  .external-link,
+  .tips-list li {
+    font-size: 5vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .knowledge-intro h2 {
+    font-size: 44px;
+  }
+  
+  .knowledge-intro p {
+    font-size: 26px;
+  }
+  
+  .section-card h3 {
+    font-size: 36px;
+  }
+  
+  .article-excerpt,
+  .article-details summary,
+  .article-body,
+  .tips-list li {
+    font-size: 24px;
+  }
+  
+  .external-link {
+    font-size: 23px;
+  }
 }
