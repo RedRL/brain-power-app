@@ -12,7 +12,7 @@
   <h1 [innerHTML]="title | t"></h1>
 
   <div class="header-right">
-    <button *ngIf="showUserInfo" class="icon-btn" (click)="goToPersonalInfo()" aria-label="Personal info">
+    <button *ngIf="showUserInfo && showPersonButton" class="icon-btn" (click)="goToPersonalInfo()" aria-label="Personal info">
       <span class="icon">person</span>
     </button>
     

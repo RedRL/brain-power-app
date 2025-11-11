@@ -18,6 +18,7 @@ export class AppHeaderComponent implements OnInit, OnChanges {
   @Input() showBack = true;  // hide on Home
   @Input() showHome = true;  // hide on Home
   @Input() showUserInfo = false;  // show user info on home page
+  @Input() showPersonButton = true;  // show person button (can be hidden on home if in icon bar)
 
   userName = '';
   isGuest = false;

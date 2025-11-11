@@ -32,7 +32,8 @@ const en: Dict = {
   goals_tile_s: 'Track progress and achievements',
   knowledge_tile_h: 'Health Knowledge',
   knowledge_tile_s: 'Learn about wellness and health',
-  contact_support: 'Notifications & Contact',
+  contact_support: 'Contact & Support',
+  notifications_alerts: 'Notifications & Alerts',
   start_demo: 'Start Demo Routine',
   // Additional translations
   welcome_to_routine: 'Daily Routine Exercises Breakdown',
@@ -1748,7 +1749,8 @@ const he: Dict = {
   goals_tile_s: 'עקב התקדמות והישגים',
   knowledge_tile_h: 'ידע בריאותי',
   knowledge_tile_s: 'למידה על בריאות ואורח חיים',
-  contact_support: 'התראות ויצירת קשר',
+  contact_support: 'יצירת קשר ותמיכה',
+  notifications_alerts: 'התראות ועדכונים',
   start_demo: 'התחל תרגול דמו',
   // Additional translations
   welcome_to_routine: 'פירוק תרגילי יומיום',

@@ -1,37 +1,43 @@
-﻿<app-header [showBack]="false" [showHome]="false" [showUserInfo]="true" [title]="'app_title'|t"></app-header>
+﻿<app-header [showBack]="false" [showHome]="false" [showUserInfo]="true" [showPersonButton]="false" [title]="'app_title'|t"></app-header><!-- Icon Bar --><div class="icon-bar">
+  <button class="icon-bar-btn" (click)="nav('/personal-info')" aria-label="Personal Info">
+    <span class="icon">person</span>
+  </button>
+  
+  <button class="icon-bar-btn" (click)="nav('/intro-daily-routine')" aria-label="Introduction">
+    <span class="icon">info</span>
+  </button>
+  
+  <button class="icon-bar-btn" (click)="nav('/ai-assistant')" aria-label="AI Assistant">
+    <span class="icon">smart_toy</span>
+  </button>
+  
+  <button class="icon-bar-btn" (click)="nav('/notifications')" aria-label="Notifications">
+    <span class="icon">notifications</span>
+  </button>
+  
+  <button class="icon-bar-btn" (click)="nav('/contact')" aria-label="Contact Us">
+    <span class="icon">mail</span>
+  </button>
+</div>
 
 <div class="home-content">
   <section class="home-grid" aria-label="Main actions">
-    <!-- 1) Intro -->
-    <button class="tile tile--1" (click)="nav('/intro-daily-routine')" aria-label="Intro to Daily Routine Exercises">
-      <h3><span class="icon">info</span> {{'intro_tile_h'|t}}</h3>
-      <p>{{'intro_tile_s'|t}}</p>
-    </button>
-
-    <!-- 2) Let's Begin -->
+    <!-- 1) Let's Begin -->
     <button class="tile tile--2" (click)="nav('/lets-begin')" aria-label="Let's Begin – Daily Routine">
       <h3><span class="icon">play_arrow</span> {{'begin_tile_h'|t}}</h3>
       <p>{{ progressSubtitle }}</p>
     </button>
 
-    <!-- 3) AI Assistant -->
-    <button class="tile tile--3" (click)="nav('/ai-assistant')" aria-label="Automated AI Answer Engine">
-      <h3><span class="icon">smart_toy</span> {{'ai_tile_h'|t}}</h3>
-      <p>{{'ai_tile_s'|t}}</p>
-    </button>
-
-    <!-- 4) Goals -->
+    <!-- 2) Goals -->
     <button class="tile tile--4" (click)="nav('/goals')" aria-label="Goals & Challenges">
       <h3><span class="icon">flag</span> {{'goals_tile_h'|t}}</h3>
       <p>{{ activeGoalsText }}</p>
     </button>
 
-    <!-- 5) Knowledge -->
+    <!-- 3) Knowledge -->
     <button class="tile tile--5" (click)="nav('/knowledge')" aria-label="Health Knowledge">
       <h3><span class="icon">menu_book</span> {{'knowledge_tile_h'|t}}</h3>
       <p>{{'knowledge_tile_s'|t}}</p>
     </button>
   </section>
-
-  <a class="contact-link" (click)="nav('/contact')">{{'contact_support'|t}}</a>
 </div>

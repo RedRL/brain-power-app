@@ -1,36 +1,6 @@
 ﻿<app-header [title]="'contact_support'|t"></app-header>
 
 <div class="content">
-  <!-- Notifications Section -->
-  <div class="notifications-section">
-    <h3>{{'notifications_title'|t}}</h3>
-    
-    <div class="notification-card" *ngFor="let notification of notifications" [class]="'notification-' + notification.type">
-      <div class="notification-icon">{{notification.icon}}</div>
-      <div class="notification-content">
-        <div class="notification-header">
-          <h4>{{notification.title|t}}</h4>
-          <span class="notification-date">{{notification.date | date:'dd/MM/yy'}}</span>
-        </div>
-        <p>{{notification.message|t}}</p>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Announcements Section -->
-  <div class="announcements-section">
-    <h3>{{'announcements_title'|t}}</h3>
-    
-    <div class="announcement-card" *ngFor="let announcement of announcements">
-      <div class="announcement-header">
-        <div class="announcement-category">{{announcement.category|t}}</div>
-        <span class="announcement-date">{{announcement.date | date:'dd/MM/yy'}}</span>
-      </div>
-      <h4>{{announcement.title|t}}</h4>
-      <p>{{announcement.description|t}}</p>
-    </div>
-  </div>
-  
   <div class="faq-section">
     <h3>{{'faq_title'|t}}</h3>
     

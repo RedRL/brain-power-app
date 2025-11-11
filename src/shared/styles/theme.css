@@ -12,7 +12,7 @@
   --tile-2: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);     /* purple to pink */
   --tile-3: linear-gradient(135deg, #10B981 0%, #84CC16 100%);     /* green to lime */
   --tile-4: linear-gradient(135deg, #D97706 0%, #FCD34D 100%);     /* darker orange to yellow */
-  --tile-5: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%);     /* cyan to blue */
+  --tile-5: linear-gradient(135deg, #34D399 0%, #10B981 100%);     /* light emerald to emerald */
 
   --radius: 16px;
   --shadow: 0 4px 14px rgba(0,0,0,.08);
