@@ -23,6 +23,8 @@ export class GoalsComponent implements OnInit, OnDestroy {
   completionPercentage: number = 0;
   isDailyRoutineCompleted: boolean = false;
   private routerSubscription?: Subscription;
+  editingGoalId: string | null = null;
+  editingGoalTitle: string = '';
 
   constructor(
     private dataService: DataService,
@@ -156,5 +158,36 @@ export class GoalsComponent implements OnInit, OnDestroy {
     this.goals.push(newGoal);
     this.dataService.saveGoals(this.goals);
     this.updateProgress();
+    
+    // Automatically enter edit mode for the new goal
+    this.startEditingGoal(newGoal);
+  }
+
+  startEditingGoal(goal: Goal) {
+    this.editingGoalId = goal.id;
+    this.editingGoalTitle = goal.title;
+  }
+
+  saveGoalEdit(goal: Goal) {
+    if (this.editingGoalTitle.trim()) {
+      goal.title = this.editingGoalTitle.trim();
+      this.dataService.saveGoals(this.goals);
+    }
+    this.cancelEditingGoal();
+  }
+
+  cancelEditingGoal() {
+    this.editingGoalId = null;
+    this.editingGoalTitle = '';
+  }
+
+  deleteGoal(goalId: string) {
+    this.goals = this.goals.filter(g => g.id !== goalId);
+    this.dataService.saveGoals(this.goals);
+    this.updateProgress();
+  }
+
+  isEditing(goalId: string): boolean {
+    return this.editingGoalId === goalId;
   }
 }

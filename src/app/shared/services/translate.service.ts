@@ -93,6 +93,10 @@ const en: Dict = {
   goal_memory_game: 'Practice memory game 3 this week',
   goal_breathing: '5-minute breathing after breakfast',
   new_goal: 'New goal',
+  edit: 'Edit',
+  delete: 'Delete',
+  save: 'Save',
+  enter_goal_name: 'Enter goal name...',
   // Article translations
   article_nutrition_title: 'Nutrition Pacing',
   article_nutrition_excerpt: 'Learn how to maintain steady energy throughout the day...',
@@ -247,6 +251,7 @@ const en: Dict = {
   score: 'Score',
   // Music Session
   choose_activity: 'Choose activity:',
+  nature_trips: 'Nature Trips',
   reading: 'Reading',
   writing: 'Marking on Screen',
   changing_slides: 'Changing Slides',
@@ -1810,6 +1815,10 @@ const he: Dict = {
   goal_memory_game: 'תרגל משחק זיכרון 3 השבוע',
   goal_breathing: '5 דקות נשימה אחרי ארוחת בוקר',
   new_goal: 'יעד חדש',
+  edit: 'ערוך',
+  delete: 'מחק',
+  save: 'שמור',
+  enter_goal_name: 'הכנס שם יעד...',
   // Article translations
   article_nutrition_title: 'קצב תזונה',
   article_nutrition_excerpt: 'למדו כיצד לשמור על אנרגיה יציבה לאורך היום...',
@@ -1964,6 +1973,7 @@ const he: Dict = {
   score: 'ציון',
   // Music Session
   choose_activity: 'בחרו פעילות',
+  nature_trips: 'טיולים בטבע',
   reading: 'קריאה',
   writing: 'סימון על המסך',
   changing_slides: 'החלפת שקופיות',

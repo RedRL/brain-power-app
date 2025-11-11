@@ -23,16 +23,45 @@
     
     <!-- Regular Goals -->
     <div *ngFor="let goal of goals" class="card goal-item">
-      <label class="goal-checkbox">
+      <div *ngIf="!isEditing(goal.id)" class="goal-display">
+        <label class="goal-checkbox">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="goal.done"
+            (change)="toggleGoal(goal)">
+          <span class="goal-label" [class.completed]="goal.done">
+            {{ goal.title }}
+          </span>
+        </label>
+        <div class="goal-actions">
+          <button class="btn-icon" (click)="startEditingGoal(goal)" [attr.aria-label]="'edit'|t">
+            <span class="icon">edit</span>
+          </button>
+          <button class="btn-icon btn-delete" (click)="deleteGoal(goal.id)" [attr.aria-label]="'delete'|t">
+            <span class="icon">delete</span>
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="isEditing(goal.id)" class="goal-edit">
         <input 
-          type="checkbox" 
-          [(ngModel)]="goal.done"
-          (change)="toggleGoal(goal)">
-        <span class="goal-label" [class.completed]="goal.done">
-          {{ goal.title }}
-        </span>
-      </label>
-      <div class="goal-due-date" *ngIf="goal.dueDate">
+          type="text" 
+          [(ngModel)]="editingGoalTitle"
+          class="goal-edit-input"
+          [placeholder]="'enter_goal_name'|t"
+          (keyup.enter)="saveGoalEdit(goal)"
+          (keyup.escape)="cancelEditingGoal()">
+        <div class="goal-edit-actions">
+          <button class="btn-small btn-primary" (click)="saveGoalEdit(goal)">
+            {{'save'|t}}
+          </button>
+          <button class="btn-small btn-secondary" (click)="cancelEditingGoal()">
+            {{'cancel'|t}}
+          </button>
+        </div>
+      </div>
+      
+      <div class="goal-due-date" *ngIf="goal.dueDate && !isEditing(goal.id)">
         <small>{{'due'|t}}: {{ goal.dueDate | date:'short' }}</small>
       </div>
     </div>

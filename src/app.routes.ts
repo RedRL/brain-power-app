@@ -5,7 +5,6 @@ export const routes: Routes = [
   { path: 'language', loadComponent: () => import('./app/language/language-select.component').then(m => m.LanguageSelectComponent) },
   { path: 'register', loadComponent: () => import('./app/components/register/register.component').then(m => m.RegisterComponent) },
   { path: 'welcome', loadComponent: () => import('./app/welcome/welcome.component').then(m => m.WelcomeComponent) },
-  { path: 'routine-level', loadComponent: () => import('./app/routine-level/level-select.component').then(m => m.LevelSelectComponent) },
   { path: 'splash', loadComponent: () => import('./app/components/splash/splash.component').then(m => m.SplashComponent) },
   { path: 'home', loadComponent: () => import('./app/components/home/home.component').then(m => m.HomeComponent) },
   { path: 'intro-daily-routine', loadComponent: () => import('./app/components/intro-daily-routine/intro-daily-routine.component').then(m => m.IntroDailyRoutineComponent) },

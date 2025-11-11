@@ -77,6 +77,7 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   
   // Sub-activities for each main activity
   subActivities = {
+    nature_trips: [],
     reading: [
       { id: 'novel', name: 'רומן', translationKey: 'novel', icon: '📖' },
       { id: 'newspaper', name: 'עיתון', translationKey: 'newspaper', icon: '📰' },
@@ -422,6 +423,18 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     localStorage.setItem('selectedActivity', activity);
     console.log('Selected activity:', activity);
     console.log('Writing sub-activities:', this.subActivities.writing);
+    
+    // If nature_trips, automatically show the video without sub-activity selection
+    if (activity === 'nature_trips') {
+      this.selectedSubActivity = { id: 'nature_view', name: 'טיולים בטבע', translationKey: 'nature_trips', icon: '🌿' };
+      this.showFullText = true;
+      
+      // Start playing music
+      if (!this.isPlaying) {
+        const audio = this.audioPlayer.nativeElement;
+        audio.play().catch(err => console.error('Play error:', err));
+      }
+    }
   }
 
   selectSubActivity(subActivityId: string) {
@@ -438,6 +451,7 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
 
   getSelectedActivityTitle(): string {
     switch (this.selectedActivity) {
+      case 'nature_trips': return this.translateService.t('nature_trips');
       case 'reading': return this.translateService.t('reading');
       case 'writing': return this.translateService.t('writing');
       case 'slides': return this.translateService.t('changing_slides');
@@ -489,6 +503,7 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     this.saveScrollPosition();
     this.saveVideoTimestamp();
     this.showFullText = false;
+    this.selectedSubActivity = null;
   }
 
   saveScrollPosition() {
@@ -584,8 +599,19 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     }
   }
 
+  shouldShowVideoBackground(): boolean {
+    // Hide video background when in reading or writing activities with full text shown
+    // Keep video visible for nature_trips
+    if (this.showFullText && (this.selectedActivity === 'reading' || this.selectedActivity === 'writing')) {
+      return false;
+    }
+    return true;
+  }
+
   getBackgroundVideoUrl(): string {
-    if (this.showFullText) {
+    if (this.showFullText && this.selectedActivity === 'nature_trips') {
+      return 'https://brain-power-app.s3.eu-north-1.amazonaws.com/videos/The-Most-Beautiful-Earth-Scenes-Captured-Short-720p-Compressed.mp4';
+    } else if (this.showFullText) {
       return 'https://brain-power-app.s3.eu-north-1.amazonaws.com/videos/Colors+Video+Background+480P.mp4';
     }
     return 'https://brain-power-app.s3.eu-north-1.amazonaws.com/Mozart-heb.mp4';
@@ -594,8 +620,10 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   getActivityText(): string {
     if (!this.selectedSubActivity) return '';
     
-    // Games don't have text content - return empty string
-    if (this.selectedSubActivity.id === 'connect_dots' || this.selectedSubActivity.id === 'solve_maze') {
+    // Games and nature trips don't have text content - return empty string
+    if (this.selectedSubActivity.id === 'connect_dots' || 
+        this.selectedSubActivity.id === 'solve_maze' ||
+        this.selectedActivity === 'nature_trips') {
       return '';
     }
     
@@ -1048,8 +1076,8 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     this.mazeImage.onload = () => {
       if (this.mazeCtx && this.mazeCanvasElement && this.mazeImage) {
         // Scale down the image to a reasonable size
-        const maxWidth = 500;
-        const maxHeight = 400;
+        const maxWidth = 700;
+        const maxHeight = 560;
         let width = this.mazeImage.width;
         let height = this.mazeImage.height;
         

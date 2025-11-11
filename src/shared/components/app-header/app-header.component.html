@@ -3,10 +3,6 @@
     <button *ngIf="showBack" class="icon-btn" (click)="goBack()" aria-label="Go back">
       <span class="icon">arrow_back</span>
     </button>
-    
-    <div *ngIf="showUserInfo && !isGuest && userName" class="user-name">
-      {{ userName }}
-    </div>
   </div>
 
   <h1 [innerHTML]="title | t"></h1>

@@ -74,12 +74,15 @@ export class AppHeaderComponent implements OnInit, OnChanges {
     } else if (currentUrl.startsWith('/breathing-session') || 
                currentUrl.startsWith('/feldenkrais-session') || 
                currentUrl.startsWith('/memory-game') ||
-               currentUrl.startsWith('/music-session') ||
                currentUrl.startsWith('/breathing-options') ||
                currentUrl.startsWith('/feldenkrais-options') ||
                currentUrl.startsWith('/game-options')) {
       // From exercise/option pages, go back to "Let's Begin"
       this.router.navigate(['/lets-begin']);
+    } else if (currentUrl.startsWith('/music-session')) {
+      // For music-session, use location.back() to respect custom back logic
+      // (music-session has internal navigation states for activities)
+      this.location.back();
     } else if (currentUrl.startsWith('/intro-daily-routine') ||
                currentUrl.startsWith('/ai-assistant') ||
                currentUrl.startsWith('/goals') ||

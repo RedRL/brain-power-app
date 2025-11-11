@@ -49,6 +49,10 @@
   z-index: 1;
 }
 
+.video-overlay.nature-overlay {
+  background: rgba(0, 0, 0, 0.15); /* Lighter overlay for nature trips to see the video better */
+}
+
 /* Music Player Container (wrapper for progress bar and player) */
 .music-player-container {
   position: fixed;
@@ -702,7 +706,7 @@
 
 /* Maze Game */
 .maze-game {
-  padding: 20px;
+  padding: 8px;
   background: transparent;
   display: flex;
   flex-direction: column;
@@ -718,7 +722,7 @@
   background: rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   width: 100%;
-  max-width: 520px;
+  max-width: 728px;
   padding: 10px;
   box-sizing: border-box;
 }
@@ -728,7 +732,7 @@
   border-radius: 8px;
   cursor: crosshair;
   max-width: 100%;
-  max-height: 400px;
+  max-height: 560px;
   width: auto;
   height: auto;
   display: block;

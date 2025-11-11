@@ -1,7 +1,7 @@
 <app-header [title]="'music_session'|t"></app-header>
 
 <!-- Video Background -->
-<div class="video-background">
+<div class="video-background" *ngIf="shouldShowVideoBackground()">
       <video 
     #backgroundVideo
     class="background-video"
@@ -11,7 +11,7 @@
     playsinline
     [src]="getBackgroundVideoUrl()">
   </video>
-  <div class="video-overlay"></div>
+  <div class="video-overlay" [class.nature-overlay]="selectedActivity === 'nature_trips'"></div>
 </div>
 
 <!-- Hidden Audio Element -->
@@ -27,7 +27,7 @@
 
 <section class="content">
   <!-- Activity Section -->
-  <div class="activity-section">
+  <div class="activity-section" *ngIf="selectedActivity !== 'nature_trips'">
     <!-- Show text content if selected -->
     <div class="full-text-display" *ngIf="showFullText">
       <!-- Connect Dots Game -->
@@ -92,13 +92,17 @@
       
       <!-- Main Activity Buttons -->
       <div class="activity-buttons" *ngIf="!selectedActivity">
-        <button class="activity-btn" (click)="selectActivity('reading')">
-          <div class="activity-icon">📖</div>
-          <span>{{'reading'|t}}</span>
+        <button class="activity-btn" (click)="selectActivity('nature_trips')">
+          <div class="activity-icon">🌿</div>
+          <span>{{'nature_trips'|t}}</span>
         </button>
         <button class="activity-btn" (click)="selectActivity('writing')">
           <div class="activity-icon">✍️</div>
           <span>{{'writing'|t}}</span>
+        </button>
+        <button class="activity-btn" (click)="selectActivity('reading')">
+          <div class="activity-icon">📖</div>
+          <span>{{'reading'|t}}</span>
         </button>
         <button class="activity-btn" disabled>
           <div class="activity-icon">📊</div>
@@ -143,8 +147,8 @@
 
   <!-- Music Player Container (includes progress bar and player) -->
   <div class="music-player-container">
-    <!-- Reading Progress Bar (only shown when reading, not games) -->
-    <div class="reading-progress-container" *ngIf="showFullText && selectedSubActivity?.id !== 'connect_dots' && selectedSubActivity?.id !== 'solve_maze'">
+    <!-- Reading Progress Bar (only shown when reading, not games or nature trips) -->
+    <div class="reading-progress-container" *ngIf="showFullText && selectedActivity !== 'nature_trips' && selectedSubActivity?.id !== 'connect_dots' && selectedSubActivity?.id !== 'solve_maze'">
       <div class="reading-progress-label">{{'reading_progress'|t}}: {{readingProgress}}%</div>
       <div class="reading-progress-bar">
         <div class="reading-progress-fill" [style.width.%]="readingProgress"></div>
