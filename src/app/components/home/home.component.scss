@@ -1,2 +1,8 @@
 ﻿/* Most styles are in global theme.css */
 /* Component-specific overrides can go here if needed */
+
+.home-content {
+  overflow-y: auto;
+  height: calc(100vh - var(--header-height, 120px));
+  min-height: calc(100vh - var(--header-height, 120px));
+}

@@ -130,3 +130,213 @@ details summary:hover {
   content: "📱";
   font-size: 20px;
 }
+
+/* Notifications Section */
+.notifications-section {
+  margin-bottom: 40px;
+}
+
+.notifications-section > h3 {
+  font-size: 1.3rem;
+  margin: 0 0 16px;
+  font-weight: 800;
+  padding-left: 16px;
+}
+
+.notification-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--primary);
+}
+
+.notification-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateX(-2px);
+}
+
+.notification-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(var(--primary-rgb, 66, 133, 244), 0.1);
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 12px;
+}
+
+.notification-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.notification-date {
+  font-size: 0.85rem;
+  color: #999;
+  white-space: nowrap;
+}
+
+.notification-content p {
+  margin: 0;
+  line-height: 1.5;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Notification type colors */
+.notification-success {
+  border-left-color: #28a745;
+}
+
+.notification-success .notification-icon {
+  background: rgba(40, 167, 69, 0.15);
+}
+
+.notification-info {
+  border-left-color: #17a2b8;
+}
+
+.notification-info .notification-icon {
+  background: rgba(23, 162, 184, 0.15);
+}
+
+.notification-warning {
+  border-left-color: #ffc107;
+}
+
+.notification-warning .notification-icon {
+  background: rgba(255, 193, 7, 0.15);
+}
+
+.notification-update {
+  border-left-color: #6c757d;
+}
+
+.notification-update .notification-icon {
+  background: rgba(108, 117, 125, 0.15);
+}
+
+/* Announcements Section */
+.announcements-section {
+  margin-bottom: 40px;
+}
+
+.announcements-section > h3 {
+  font-size: 1.3rem;
+  margin: 0 0 16px;
+  font-weight: 800;
+  padding-left: 16px;
+}
+
+.announcement-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.announcement-card:hover {
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+  transform: translateY(-2px);
+}
+
+.announcement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.announcement-category {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.announcement-date {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.announcement-card h4 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.announcement-card p {
+  margin: 0;
+  line-height: 1.6;
+  opacity: 0.95;
+  font-size: 0.95rem;
+}
+
+/* RTL Support for Notifications and Announcements */
+:host-context(.lang-he) .notification-card {
+  border-left: none;
+  border-right: 4px solid var(--primary);
+}
+
+:host-context(.lang-he) .notification-card:hover {
+  transform: translateX(2px);
+}
+
+:host-context(.lang-he) .notifications-section > h3,
+:host-context(.lang-he) .announcements-section > h3,
+:host-context(.lang-he) .faq-section > h3 {
+  padding-left: 0;
+  padding-right: 16px;
+}
+
+:host-context(.lang-he) .notification-success {
+  border-left-color: transparent;
+  border-right-color: #28a745;
+}
+
+:host-context(.lang-he) .notification-info {
+  border-left-color: transparent;
+  border-right-color: #17a2b8;
+}
+
+:host-context(.lang-he) .notification-warning {
+  border-left-color: transparent;
+  border-right-color: #ffc107;
+}
+
+:host-context(.lang-he) .notification-update {
+  border-left-color: transparent;
+  border-right-color: #6c757d;
+}

@@ -65,6 +65,11 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   mazeCanvasElement: HTMLCanvasElement | null = null;
   mazeCtx: CanvasRenderingContext2D | null = null;
   
+  // Image-based maze properties
+  mazeImage: HTMLImageElement | null = null;
+  mazeImageData: ImageData | null = null;
+  mazeImageUrl: string = 'assets/images/maze.png';
+  
   @ViewChild('textContent') textContent!: ElementRef<HTMLDivElement>;
   @ViewChild('backgroundVideo') backgroundVideo!: ElementRef<HTMLVideoElement>;
   @ViewChild('connectDotsCanvas') connectDotsCanvas!: ElementRef<HTMLCanvasElement>;
@@ -1033,43 +1038,121 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     this.mazeCompletedPaths = [];
     this.mazeProgress = 0;
     this.isDrawingMaze = false;
-    this.drawMaze();
+    
+    // Load the maze image
+    this.loadMazeImage();
+  }
+  
+  loadMazeImage() {
+    this.mazeImage = new Image();
+    this.mazeImage.onload = () => {
+      if (this.mazeCtx && this.mazeCanvasElement && this.mazeImage) {
+        // Scale down the image to a reasonable size
+        const maxWidth = 500;
+        const maxHeight = 400;
+        let width = this.mazeImage.width;
+        let height = this.mazeImage.height;
+        
+        // Calculate scaling to fit within max dimensions
+        const scaleX = maxWidth / width;
+        const scaleY = maxHeight / height;
+        const scale = Math.min(scaleX, scaleY, 1); // Don't scale up, only down
+        
+        width = Math.floor(width * scale);
+        height = Math.floor(height * scale);
+        
+        // Set canvas to scaled dimensions
+        this.mazeCanvasElement.width = width;
+        this.mazeCanvasElement.height = height;
+        
+        // Draw the scaled image
+        this.mazeCtx.drawImage(this.mazeImage, 0, 0, width, height);
+        this.mazeImageData = this.mazeCtx.getImageData(0, 0, width, height);
+        
+        // Detect start and end positions from the scaled image
+        this.detectMazeStartEnd();
+        
+        // Redraw to show the maze
+        this.drawMaze();
+      }
+    };
+    this.mazeImage.onerror = () => {
+      console.error('Failed to load maze image from:', this.mazeImageUrl);
+    };
+    this.mazeImage.src = this.mazeImageUrl;
+  }
+  
+  detectMazeStartEnd() {
+    if (!this.mazeImageData) return;
+    
+    const data = this.mazeImageData.data;
+    const width = this.mazeImageData.width;
+    const height = this.mazeImageData.height;
+    
+    let startFound = false;
+    let endFound = false;
+    
+    // Look for green pixel (start) and red pixel (end)
+    // Green: RGB(0, 255, 0) or similar
+    // Red: RGB(255, 0, 0) or similar
+    
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const idx = (y * width + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        
+        // Detect green (start position)
+        if (g > 200 && r < 100 && b < 100) {
+          this.mazeStartPosition = { x, y };
+          startFound = true;
+        }
+        
+        // Detect red (end position)
+        if (r > 200 && g < 100 && b < 100) {
+          this.mazeEndPosition = { x, y };
+          endFound = true;
+        }
+      }
+    }
+    
+    // Fallback to default positions if not found in image
+    if (!startFound) {
+      this.mazeStartPosition = { x: 20, y: 20 };
+      console.warn('Green start marker not found in maze image, using default position');
+    }
+    
+    if (!endFound) {
+      this.mazeEndPosition = { x: width - 20, y: height - 20 };
+      console.warn('Red end marker not found in maze image, using default position');
+    }
   }
 
   drawMaze() {
-    if (!this.mazeCtx || !this.mazeCanvasElement) return;
+    if (!this.mazeCtx || !this.mazeCanvasElement || !this.mazeImage) return;
     const ctx = this.mazeCtx;
     ctx.clearRect(0, 0, this.mazeCanvasElement.width, this.mazeCanvasElement.height);
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 2;
-
-    // Draw all segments of the static maze so draw logic and collision share the same source
-    const segments = this.getStaticMazeSegments();
-    segments.forEach(s => {
-      ctx.beginPath();
-      ctx.moveTo(s.start.x, s.start.y);
-      ctx.lineTo(s.end.x, s.end.y);
-      ctx.stroke();
-    });
-
-    // Start/End points
+    
+    // Draw the maze image as background (scaled to canvas size)
+    ctx.drawImage(this.mazeImage, 0, 0, this.mazeCanvasElement.width, this.mazeCanvasElement.height);
+    
+    // Draw start/end circles on top of the image
     ctx.fillStyle = '#4CAF50';
     ctx.beginPath();
-    ctx.arc(40, 36, 8, 0, Math.PI * 2);
+    ctx.arc(this.mazeStartPosition.x, this.mazeStartPosition.y, 6, 0, Math.PI * 2);
     ctx.fill();
-    this.mazeStartPosition = { x: 40, y: 36 };
-
+    
     ctx.fillStyle = '#F44336';
     ctx.beginPath();
-    ctx.arc(268, 166, 8, 0, Math.PI * 2);
+    ctx.arc(this.mazeEndPosition.x, this.mazeEndPosition.y, 6, 0, Math.PI * 2);
     ctx.fill();
-    this.mazeEndPosition = { x: 268, y: 166 };
 
     // Previously completed paths
     this.mazeCompletedPaths.forEach(path => {
       if (path.length > 1) {
         ctx.strokeStyle = '#2196F3';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(path[0].x, path[0].y);
         for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
@@ -1080,7 +1163,7 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     // Current path being drawn
     if (this.mazePath.length > 1) {
       ctx.strokeStyle = '#FF9800';
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(this.mazePath[0].x, this.mazePath[0].y);
       for (let i = 1; i < this.mazePath.length; i++) ctx.lineTo(this.mazePath[i].x, this.mazePath[i].y);
@@ -1088,46 +1171,6 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Exact maze segments to match the screenshot (shared by renderer and collision)
-  private getStaticMazeSegments(): Array<{ start: { x: number, y: number }, end: { x: number, y: number } }> {
-    const segs: Array<{ start: { x: number, y: number }, end: { x: number, y: number } }> = [];
-
-    // Dimensions
-    const left = 28, top = 28, right = 272, bottom = 172;
-
-    // Outer border with gaps: top-left entrance, bottom-right exit
-    segs.push({ start: { x: 50, y: top }, end: { x: right, y: top } });
-    segs.push({ start: { x: left, y: top + 20 }, end: { x: left, y: bottom } });
-    segs.push({ start: { x: left, y: bottom }, end: { x: right, y: bottom } });
-    segs.push({ start: { x: right, y: top }, end: { x: right, y: bottom - 20 } });
-
-    // Build alternating-gap nested rectangles to form a single long corridor like the reference
-    const buildLayer = (l: number, t: number, r: number, b: number, gapSide: 'top'|'right'|'bottom'|'left', gapSize = 38) => {
-      const gs = gapSize;
-      if (gapSide !== 'top')    segs.push({ start: { x: l, y: t }, end: { x: r, y: t } });
-      else                      segs.push({ start: { x: l + gs, y: t }, end: { x: r, y: t } });
-      if (gapSide !== 'right')  segs.push({ start: { x: r, y: t }, end: { x: r, y: b } });
-      else                      segs.push({ start: { x: r, y: t }, end: { x: r, y: b - gs } });
-      if (gapSide !== 'bottom') segs.push({ start: { x: r, y: b }, end: { x: l, y: b } });
-      else                      segs.push({ start: { x: r - gs, y: b }, end: { x: l, y: b } });
-      if (gapSide !== 'left')   segs.push({ start: { x: l, y: b }, end: { x: l, y: t } });
-      else                      segs.push({ start: { x: l, y: b }, end: { x: l, y: t + gs } });
-    };
-
-    const step = 20; // shrink per layer
-    let l = 48, t = 48, r = 252, b = 152;
-    const sides: Array<'top'|'right'|'bottom'|'left'> = ['top', 'right', 'bottom', 'left', 'top', 'right', 'bottom'];
-    for (let i = 0; i < sides.length; i++) {
-      buildLayer(l, t, r, b, sides[i], 34);
-      l += step; t += step; r -= step; b -= step;
-    }
-
-    // Add a few inner horizontal bars like in the reference right block
-    segs.push({ start: { x: l - 10, y: t + 20 }, end: { x: r + 10, y: t + 20 } });
-    segs.push({ start: { x: l + 10, y: t + 40 }, end: { x: r - 10, y: t + 40 } });
-
-    return segs;
-  }
 
   onMazeMouseDown(event: MouseEvent) {
     this.handleMazeStart(event);
@@ -1271,9 +1314,17 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
       clientY = event.clientY;
     }
     
+    // Calculate position relative to canvas
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    
+    // Scale the coordinates to match the canvas internal dimensions
+    const scaleX = this.mazeCanvasElement.width / rect.width;
+    const scaleY = this.mazeCanvasElement.height / rect.height;
+    
     return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
+      x: x * scaleX,
+      y: y * scaleY
     };
   }
 
@@ -1311,50 +1362,52 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  // Define maze border segments (same as in drawMaze)
-  getMazeBorders(): Array<{start: {x: number, y: number}, end: {x: number, y: number}}> {
-    // Use the same static segments that the renderer uses
-    return this.getStaticMazeSegments();
-  }
-
-  // Check if two line segments intersect
-  doLineSegmentsIntersect(line1Start: {x: number, y: number}, line1End: {x: number, y: number}, 
-                          line2Start: {x: number, y: number}, line2End: {x: number, y: number}): boolean {
-    const denom = (line1End.x - line1Start.x) * (line2End.y - line2Start.y) - 
-                  (line1End.y - line1Start.y) * (line2End.x - line2Start.x);
-    
-    if (Math.abs(denom) < 0.0001) {
-      // Lines are parallel
-      return false;
-    }
-    
-    const t1 = ((line2Start.x - line1Start.x) * (line2End.y - line2Start.y) - 
-                (line2Start.y - line1Start.y) * (line2End.x - line2Start.x)) / denom;
-    
-    const t2 = ((line2Start.x - line1Start.x) * (line1End.y - line1Start.y) - 
-                (line2Start.y - line1Start.y) * (line1End.x - line1Start.x)) / denom;
-    
-    // Check if intersection point is within both line segments
-    return t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
-  }
-
   // Check if a drawn path intersects with any maze borders
   checkPathCollisionWithBorders(path: Array<{x: number, y: number}>): boolean {
-    const borders = this.getMazeBorders();
+    return this.checkPathCollisionWithImage(path);
+  }
+  
+  // Check if path collides with dark pixels in the maze image
+  checkPathCollisionWithImage(path: Array<{x: number, y: number}>): boolean {
+    if (!this.mazeImageData) return false;
     
-    // Check each segment of the path against all border segments
+    const data = this.mazeImageData.data;
+    const width = this.mazeImageData.width;
+    const height = this.mazeImageData.height;
+    
+    // Check each segment of the path
     for (let i = 0; i < path.length - 1; i++) {
-      const pathSegment = {
-        start: path[i],
-        end: path[i + 1]
-      };
+      const start = path[i];
+      const end = path[i + 1];
       
-      for (const border of borders) {
-        if (this.doLineSegmentsIntersect(
-          pathSegment.start, pathSegment.end,
-          border.start, border.end
-        )) {
-          return true; // Collision detected
+      // Interpolate points between start and end to check entire line
+      const distance = Math.sqrt(
+        Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2)
+      );
+      const steps = Math.ceil(distance);
+      
+      for (let step = 0; step <= steps; step++) {
+        const t = step / steps;
+        const x = Math.round(start.x + (end.x - start.x) * t);
+        const y = Math.round(start.y + (end.y - start.y) * t);
+        
+        // Skip out of bounds points
+        if (x < 0 || x >= width || y < 0 || y >= height) {
+          continue;
+        }
+        
+        const idx = (y * width + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        
+        // Check if this pixel is a wall (dark color, not green or red)
+        const isGreen = g > 200 && r < 100 && b < 100;
+        const isRed = r > 200 && g < 100 && b < 100;
+        const isDark = r < 128 && g < 128 && b < 128;
+        
+        if (isDark && !isGreen && !isRed) {
+          return true; // Hit a wall
         }
       }
     }
