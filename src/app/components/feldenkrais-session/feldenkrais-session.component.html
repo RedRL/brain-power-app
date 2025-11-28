@@ -2,16 +2,6 @@
 
 <section class="content">
   <div class="video-wrapper" #videoContainer>
-    <!-- Progress Bar (overlay at top of video) -->
-    <div class="progress-container">
-      <div class="progress-bar">
-        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
-      </div>
-      <div class="progress-text">
-        <span>{{'video_progress'|t}}: {{progressPercentage | number:'1.0-0'}}%</span>
-      </div>
-    </div>
-
     <div class="video-frame">
       <!-- Feldenkrais Video -->
       <video 
@@ -38,10 +28,6 @@
             <text x="12" y="16" text-anchor="middle" font-size="9" fill="currentColor" font-weight="bold">5</text>
           </svg>
         </button>
-        <div class="tooltip tooltip-left">
-          <div class="tooltip-arrow"></div>
-          <span>{{'rewind_5_seconds'|t}}</span>
-        </div>
       </div>
       
       <!-- Play/Pause - Center -->
@@ -54,11 +40,16 @@
             <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z" fill="currentColor" />
           </svg>
         </button>
-        <div class="tooltip tooltip-right">
-          <div class="tooltip-arrow"></div>
-          <span *ngIf="!isPlaying">{{'play_video'|t}}</span>
-          <span *ngIf="isPlaying">{{'pause_video'|t}}</span>
-        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar (below buttons) -->
+    <div class="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <div class="progress-text">
+        <span>{{'video_progress'|t}}: {{progressPercentage | number:'1.0-0'}}%</span>
       </div>
     </div>
   </div>

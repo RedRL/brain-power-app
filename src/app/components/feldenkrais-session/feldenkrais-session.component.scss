@@ -1,27 +1,27 @@
 /* Feldenkrais session styles */
 
 .content {
-  padding: 8vw 4vw 4vw; /* Increased top padding */
+  padding: 0;
   max-width: 900px;
-  margin: 0 auto;
+  margin: 0;
   height: 100%; /* Full height */
 }
 
 .video-wrapper {
-  position: relative;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 3vw;
-  padding: 3vw;
-  margin-bottom: 4vw;
+  position: relative; 
+  background: rgba(0, 0, 0, 0.3); 
+  border-radius: 20px;
+  padding: 20px; 
+  margin-bottom: 0; 
   backdrop-filter: blur(10px);
 }
 
-.video-frame {
-  position: relative;
+.video-frame { 
+  position: relative; 
   overflow: visible; /* Allow progress bar to show above */
-  border-radius: 2vw;
-  margin-bottom: 2.5vw;
-  max-width: 280px; /* Smaller video */
+  border-radius: 12px; 
+  margin-bottom: 16px;
+  max-width: 350px; /* Smaller video */
   margin-left: auto;
   margin-right: auto;
   aspect-ratio: 9 / 16; /* Vertical aspect ratio (portrait) */
@@ -31,36 +31,40 @@
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 2vw;
-  box-shadow: 0 1vw 5vw rgba(0,0,0,0.3);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   background: #000;
   object-fit: cover; /* Zoomed in to fill container */
   object-position: center top; /* Crop more from the top */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px) { 
   .video-frame {
     max-width: 100%;
   }
-
+  
   .feldenkrais-video {
     height: 100%;
+  }
+  
+  .progress-container {
+    width: calc(100% - 70px); /* Keep same width on mobile */
   }
 }
 
 .custom-controls {
   position: absolute;
-  bottom: -3vw; /* Positioned higher */
+  bottom: 70px; /* Above progress bar */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 2.5vw;
+  gap: 20px;
   justify-content: center;
   align-items: center;
-  padding: 1.5vw;
+  padding: 12px;
   background: rgba(22, 163, 74, 0.8); /* Darker green background */
   backdrop-filter: blur(10px);
-  border-radius: 2vw;
+  border-radius: 12px;
   border: 1px solid rgba(22, 163, 74, 0.9); /* Darker green border */
   z-index: 10;
 }
@@ -80,11 +84,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 15vw; /* Increased */
-  height: 15vw; /* Increased */
+  width: 56px;
+  height: 56px;
   background: rgba(255, 255, 255, 0.15);
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 2vw;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   color: #fff;
@@ -95,7 +99,7 @@
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.5);
   transform: scale(1.05);
-  box-shadow: 0 0.5vw 2vw rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .control-btn:active {
@@ -103,29 +107,11 @@
 }
 
 .control-btn svg {
-  width: 9vw; /* Increased */
-  height: 9vw; /* Increased */
-  filter: drop-shadow(0 0.3vw 0.5vw rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .tooltip {
-  position: absolute;
-  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); /* Orange gradient */
-  color: #fff;
-  padding: 1vw 2vw;
-  border-radius: 1.2vw;
-  font-size: 3.5vw; /* Increased */
-  font-weight: 500;
-  white-space: nowrap; /* No line breaks */
-  text-align: center;
-  line-height: 1.4;
-  opacity: 1;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 1000;
-  box-shadow: 0 0.5vw 2vw rgba(249, 115, 22, 0.4);
-  width: max-content;
-  min-width: 15vw;
+  display: none;
 }
 
 .tooltip-left {
@@ -216,43 +202,45 @@
 
 .progress-container {
   position: absolute;
-  top: -4vw; /* Moved down a bit */
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(22, 163, 74, 0.8); /* Darker green background */
   backdrop-filter: blur(20px);
-  border-radius: 2.5vw;
-  padding: 1.5vw;
+  border-radius: 16px 16px 0 0;
+  padding: 12px;
   border: 1px solid rgba(22, 163, 74, 0.9); /* Darker green border */
-  z-index: 10;
-  width: calc(100% - 12vw);
+  border-bottom: none;
+  z-index: 9;
+  width: 100%;
+  max-width: 350px;
 }
 
 .progress-bar {
   width: 100%;
-  height: 0.8vw;
+  height: 12px;
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 0.8vw;
+  border-radius: 12px;
   overflow: hidden;
   position: relative;
-  box-shadow: inset 0 0.3vw 0.6vw rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .progress-fill {
   height: 100%;
   background: linear-gradient(90deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
-  border-radius: 0.8vw;
+  border-radius: 12px;
   transition: width 0.3s ease;
-  box-shadow: 0 0 1.5vw rgba(52, 211, 153, 0.5);
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.5);
 }
 
 .progress-text {
-  margin-top: 1.5vw;
+  margin-top: 12px;
   text-align: center;
   color: #fff;
-  font-size: 4vw; /* Increased */
+  font-size: 0.9rem;
   font-weight: 600;
-  text-shadow: 0 0.3vw 0.6vw rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .congratulations-overlay {

@@ -32,19 +32,27 @@
     </div>
   </div>
   
-  <!-- Contact Options (WhatsApp) - Bottom of Page -->
-  <div class="contact-intro">
-    <h2>{{'get_in_touch'|t}}</h2>
-    <p>{{'help_support'|t}}</p>
-  </div>
-  
-  <div class="contact-options">
-    <div class="section-card">
-      <h3>{{'send_message'|t}}</h3>
-      <p>{{'contact_whatsapp'|t}}</p>
-      <button class="btn-whatsapp" (click)="sendWhatsApp()">
-        {{'whatsapp'|t}}
-      </button>
+  <!-- Contact Form - Bottom of Page -->
+  <div class="contact-form-section">
+    <div class="section-card contact-card">
+      <h3 class="contact-title">{{'contact_us'|t}}</h3>
+      <p>{{'contact_form_description'|t}}</p>
+      
+      <form class="contact-form" (ngSubmit)="submitContactForm()">
+        <div class="form-group">
+          <textarea 
+            id="contact-message" 
+            name="message"
+            [(ngModel)]="contactForm.message"
+            placeholder="{{'enter_message'|t}}"
+            rows="5"
+            required></textarea>
+        </div>
+        
+        <button type="submit" class="btn-submit" [disabled]="!isFormValid()">
+          {{'send_message'|t}}
+        </button>
+      </form>
     </div>
   </div>
 </div>

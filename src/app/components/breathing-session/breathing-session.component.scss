@@ -1,9 +1,9 @@
 /* Breathing session styles */
 
 .content { 
-  padding: 30px 40px; 
+  padding: 0; 
   max-width: 900px; 
-  margin: 20px auto 0;
+  margin: 0;
   height: 100%; /* Full height */
 }
 
@@ -12,7 +12,7 @@
   background: rgba(0, 0, 0, 0.3); 
   border-radius: 20px;
   padding: 20px; 
-  margin-bottom: 24px; 
+  margin-bottom: 0; 
   backdrop-filter: blur(10px);
 }
 
@@ -54,7 +54,7 @@
 
 .custom-controls {
   position: absolute;
-  bottom: -25px; /* Positioned higher */
+  bottom: 70px; /* Above progress bar */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -111,23 +111,7 @@
 }
 
 .tooltip {
-  position: absolute;
-  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); /* Orange gradient */
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  white-space: nowrap; /* No line breaks */
-  text-align: center;
-  line-height: 1.4;
-  opacity: 1;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
-  width: max-content;
-  min-width: 100px;
+  display: none;
 }
 
 .tooltip-left {
@@ -212,16 +196,18 @@
 
 .progress-container {
   position: absolute;
-  top: -30px; /* Moved down a bit */
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(22, 163, 74, 0.8); /* Darker green background */
   backdrop-filter: blur(20px);
-  border-radius: 16px;
+  border-radius: 16px 16px 0 0;
   padding: 12px;
   border: 1px solid rgba(22, 163, 74, 0.9); /* Darker green border */
-  z-index: 10;
-  width: calc(100% - 70px);
+  border-bottom: none;
+  z-index: 9;
+  width: 100%;
+  max-width: 350px;
 }
 
 .progress-bar {

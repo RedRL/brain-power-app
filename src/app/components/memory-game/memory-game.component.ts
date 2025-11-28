@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AppHeaderComponent } from '../../../shared/components/app-header/app-header.component';
@@ -28,6 +28,7 @@ interface DraggablePiece {
 })
 export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
   level: 'beginner' | 'advanced' | 'grand' = 'beginner';
+  showLevelDropdown: boolean = false;
   
   // Game states
   phase: 'viewing' | 'playing' | 'completed' | 'failed' = 'viewing';
@@ -86,9 +87,57 @@ export class MemoryGameComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.level = params['level'] || 'beginner';
+      // Use query param if provided, otherwise use level from localStorage (personal area setting)
+      const storedLevel = localStorage.getItem('level');
+      const defaultLevel = (storedLevel === 'advanced' || storedLevel === 'grand') ? storedLevel : 'beginner';
+      this.level = params['level'] || defaultLevel;
       this.initializeGame();
     });
+  }
+
+  toggleLevelDropdown() {
+    this.showLevelDropdown = !this.showLevelDropdown;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const dropdown = target.closest('.custom-dropdown');
+    if (!dropdown && this.showLevelDropdown) {
+      this.showLevelDropdown = false;
+    }
+  }
+
+  selectLevel(newLevel: 'beginner' | 'advanced' | 'grand') {
+    if (this.level === newLevel) {
+      this.showLevelDropdown = false;
+      return;
+    }
+
+    // Only change level for this game session, not globally
+    // Clear any existing timers
+    if (this.viewTimer) {
+      clearTimeout(this.viewTimer);
+    }
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+    
+    // Reset game state
+    this.level = newLevel;
+    this.showLevelDropdown = false;
+    this.phase = 'viewing';
+    this.startTime = 0;
+    this.completionTime = 0;
+    this.score = 0;
+    this.remainingSeconds = 0;
+    
+    // Reinitialize game with new level
+    this.initializeGame();
+  }
+
+  onLevelChange(newLevel: 'beginner' | 'advanced' | 'grand') {
+    this.selectLevel(newLevel);
   }
 
   ngAfterViewInit() {

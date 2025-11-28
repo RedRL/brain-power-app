@@ -1,5 +1,13 @@
 <app-header [title]="'music_session'|t"></app-header>
 
+<!-- Top Music Toggle Button -->
+<div class="top-music-toggle">
+  <button class="btn-music-toggle" (click)="toggleMusicPlayer()">
+    <span class="icon">{{ isPlaying ? 'stop' : 'play_arrow' }}</span>
+    <span>{{ isPlaying ? ('stop_music'|t) : ('play_music'|t) }}</span>
+  </button>
+</div>
+
 <!-- Video Background -->
 <div class="video-background" *ngIf="shouldShowVideoBackground()">
       <video 
@@ -146,7 +154,7 @@
          </div>
 
   <!-- Music Player Container (includes progress bar and player) -->
-  <div class="music-player-container">
+  <div class="music-player-container" [class.hiding]="isHidingPlayer" *ngIf="showPlayer">
     <!-- Reading Progress Bar (only shown when reading, not games or nature trips) -->
     <div class="reading-progress-container" *ngIf="showFullText && selectedActivity !== 'nature_trips' && selectedSubActivity?.id !== 'connect_dots' && selectedSubActivity?.id !== 'solve_maze'">
       <div class="reading-progress-label">{{'reading_progress'|t}}: {{readingProgress}}%</div>
@@ -156,15 +164,18 @@
     </div>
 
     <!-- Compact Music Player -->
-    <div class="compact-music-player">
+    <div class="compact-music-player" [class.collapsed]="isPlayerCollapsed">
+      <!-- Collapse Button -->
+      <button class="collapse-btn" (click)="togglePlayerCollapse()">
+        <span class="icon">{{ isPlayerCollapsed ? 'expand_less' : 'expand_more' }}</span>
+      </button>
     
     <!-- Track Info -->
     <div class="track-info">
-      <h3 class="track-title">
-        <span class="title-text">{{ getTrackTitle() || 'No Track Selected' }}</span>
-        <span class="separator"> - </span>
-        <span class="artist-text">{{ getArtistName() || 'Unknown Artist' }}</span>
-      </h3>
+      <div class="track-title">
+        <div class="title-text">{{ getTrackTitle() || 'No Track Selected' }}</div>
+        <div class="artist-text">{{ getArtistName() || 'Unknown Artist' }}</div>
+      </div>
     </div>
 
     <!-- Progress Bar with Time -->

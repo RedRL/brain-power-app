@@ -86,6 +86,11 @@ export class DataService {
     return allCompletions.filter(c => c.date === today);
   }
 
+  getCompletionsForDate(date: string): Completion[] {
+    const allCompletions = this.storage.get<Completion[]>('completions', []);
+    return allCompletions.filter(c => c.date === date);
+  }
+
   addCompletion(completion: Completion): void {
     this.storage.pushToArray('completions', completion);
   }

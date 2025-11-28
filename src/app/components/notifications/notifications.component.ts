@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AppHeaderComponent } from '../../../shared/components/app-header/app-header.component';
 import { TPipe } from '../../shared/pipes/t.pipe';
 import { TranslateService } from '../../shared/services/translate.service';
+import { NotificationsService, Reminder } from '../../services/notifications.service';
 
 interface Notification {
   id: number;
@@ -24,21 +26,16 @@ interface Announcement {
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule, AppHeaderComponent, TPipe, DatePipe],
+  imports: [CommonModule, FormsModule, AppHeaderComponent, TPipe, DatePipe],
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.scss']
 })
 export class NotificationsComponent implements OnInit {
+  reminderName: string = '';
+  reminderTime: string = '10:30';
+  reminders: Reminder[] = [];
   
   notifications: Notification[] = [
-    {
-      id: 1,
-      type: 'success',
-      title: 'notification_new_content',
-      message: 'notification_new_content_desc',
-      date: new Date('2024-11-08'),
-      icon: '🎉'
-    },
     {
       id: 2,
       type: 'info',
@@ -46,22 +43,6 @@ export class NotificationsComponent implements OnInit {
       message: 'notification_daily_reminder_desc',
       date: new Date('2024-11-07'),
       icon: '⏰'
-    },
-    {
-      id: 3,
-      type: 'update',
-      title: 'notification_app_update',
-      message: 'notification_app_update_desc',
-      date: new Date('2024-11-05'),
-      icon: '🔄'
-    },
-    {
-      id: 4,
-      type: 'warning',
-      title: 'notification_maintenance',
-      message: 'notification_maintenance_desc',
-      date: new Date('2024-11-03'),
-      icon: '⚠️'
     }
   ];
 
@@ -89,10 +70,42 @@ export class NotificationsComponent implements OnInit {
     }
   ];
 
-  constructor(private translateService: TranslateService) {}
+  constructor(
+    private translateService: TranslateService,
+    private notificationsService: NotificationsService
+  ) {}
 
   ngOnInit() {
     this.translateService.applyDir();
+    this.loadReminders();
+  }
+
+  loadReminders() {
+    this.reminders = this.notificationsService.getReminders();
+  }
+
+  saveReminder() {
+    if (!this.reminderTime) {
+      return;
+    }
+
+    const name = this.reminderName.trim() || this.translateService.t('daily_routine_reminder');
+    this.notificationsService.scheduleReminder(name, this.reminderTime);
+    this.loadReminders();
+    
+    // Show success message
+    alert(this.translateService.t('reminder_saved'));
+    
+    // Reset inputs
+    this.reminderName = '';
+    this.reminderTime = '10:30';
+  }
+
+  deleteReminder(id: string) {
+    if (confirm(this.translateService.t('delete_reminder') + '?')) {
+      this.notificationsService.removeReminder(id);
+      this.loadReminders();
+    }
   }
 }
 

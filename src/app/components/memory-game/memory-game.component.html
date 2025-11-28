@@ -1,6 +1,43 @@
 <app-header [title]="'memory_game_image_patterns'|t"></app-header>
 
 <section class="content">
+  <!-- Level Dropdown -->
+  <div class="level-selector-container">
+    <label class="level-label">{{'change_level'|t}}:</label>
+    <div class="custom-dropdown" [class.open]="showLevelDropdown">
+      <button 
+        type="button"
+        class="dropdown-toggle" 
+        [attr.data-level]="level"
+        (click)="toggleLevelDropdown()">
+        <span [class]="'level-text level-' + level">{{ level === 'beginner' ? ('beginner'|t) : level === 'advanced' ? ('advanced'|t) : ('grand_master'|t) }}</span>
+        <span class="dropdown-arrow icon">expand_more</span>
+      </button>
+      <div class="dropdown-menu" *ngIf="showLevelDropdown">
+        <button 
+          type="button"
+          class="dropdown-option" 
+          [class.selected]="level === 'beginner'"
+          (click)="selectLevel('beginner')">
+          <span class="level-text level-beginner">{{'beginner'|t}}</span>
+        </button>
+        <button 
+          type="button"
+          class="dropdown-option" 
+          [class.selected]="level === 'advanced'"
+          (click)="selectLevel('advanced')">
+          <span class="level-text level-advanced">{{'advanced'|t}}</span>
+        </button>
+        <button 
+          type="button"
+          class="dropdown-option" 
+          [class.selected]="level === 'grand'"
+          (click)="selectLevel('grand')">
+          <span class="level-text level-grand">{{'grand_master'|t}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
   
   <!-- Viewing Phase: Show the pattern -->
   <div class="game-container" *ngIf="phase === 'viewing'">

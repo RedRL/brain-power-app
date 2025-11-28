@@ -5,6 +5,200 @@
 
 /* Most styles are in global theme.css */
 
+/* Reminder Setting Section */
+.reminder-setting-section {
+  margin-bottom: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.reminder-setting-section h3 {
+  font-size: 1.3rem;
+  margin: 0 0 20px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.reminder-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reminder-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reminder-form label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.text-input,
+.time-input {
+  padding: 16px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.text-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.text-input:focus,
+.time-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.2);
+}
+
+.btn-save-reminder {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-save-reminder:hover {
+  background: #F97316;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.btn-save-reminder .icon {
+  font-size: 20px;
+}
+
+/* Reminders Section */
+.reminders-section {
+  margin-bottom: 40px;
+}
+
+.reminders-section h3 {
+  font-size: 1.3rem;
+  margin: 0 0 16px;
+  font-weight: 800;
+  color: #fff;
+  padding-left: 16px;
+}
+
+.no-reminders {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.reminder-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.reminder-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.reminder-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.reminder-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(107, 70, 193, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reminder-icon .icon {
+  font-size: 24px;
+  color: var(--primary);
+}
+
+.reminder-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.reminder-info h4 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.reminder-time-display {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.btn-delete-reminder {
+  background: rgba(239, 68, 68, 0.2);
+  color: #EF4444;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+}
+
+.btn-delete-reminder:hover {
+  background: rgba(239, 68, 68, 0.3);
+  transform: scale(1.1);
+}
+
+.btn-delete-reminder .icon {
+  font-size: 20px;
+}
+
 /* Notifications Section */
 .notifications-section {
   margin-bottom: 40px;

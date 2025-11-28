@@ -2,141 +2,440 @@
 
 <div class="content">
   <div class="form-container">
-    <h2>{{'update_personal_info'|t}}</h2>
-    <p class="form-description">{{'personal_info_description'|t}}</p>
+    <!-- Calendar Section -->
+    <div class="calendar-section">
+      <div class="calendar-header">
+        <button type="button" class="calendar-nav-btn" (click)="previousMonth()">
+          <span class="icon">chevron_left</span>
+        </button>
+        <h2 class="calendar-month-title">{{ monthName }}</h2>
+        <button type="button" class="calendar-nav-btn" (click)="nextMonth()">
+          <span class="icon">chevron_right</span>
+        </button>
+      </div>
+      <div class="calendar-container">
+        <!-- Day names header -->
+        <div class="calendar-day-names">
+          <div class="day-name" *ngFor="let dayName of dayNames">{{ dayName }}</div>
+        </div>
+        <div class="calendar-grid">
+          <div 
+            *ngFor="let day of calendarDays" 
+            class="calendar-day"
+            [class.no-completion]="day.completionStatus === 'none' && !day.isFuture && !day.isOtherMonth"
+            [class.partial-completion]="day.completionStatus === 'partial'"
+            [class.full-completion]="day.completionStatus === 'full'"
+            [class.future-day]="day.isFuture && !day.isOtherMonth"
+            [class.other-month]="day.isOtherMonth"
+            [class.selected]="selectedDate === day.date"
+            (click)="selectDate(day.date)">
+            <div class="day-number">{{ day.day }}</div>
+          </div>
+        </div>
+      </div>
 
-    <form [formGroup]="form" (ngSubmit)="saveProfile()" class="personal-form">
-      <div class="form-group">
-        <div class="label-row">
-          <label for="firstName">{{'first_name'|t}} <span class="required">*</span></label>
+      <!-- Selected Day Details -->
+      <div class="day-details" *ngIf="selectedDate">
+        <h3>{{'goals_on'|t}} {{ formatDate(selectedDate) }}</h3>
+        
+        <!-- Daily Activities -->
+        <div class="daily-activities-section">
+          <h4>{{'daily_activities'|t}}</h4>
+          <div class="activities-grid">
+            <div class="activity-item" *ngFor="let activity of selectedDayActivities">
+              <span class="activity-name">{{ activity.name }}</span>
+              <span class="activity-status" [class.completed]="activity.completed" [class.not-completed]="!activity.completed">
+                <span class="icon" *ngIf="activity.completed">check</span>
+                <span class="icon" *ngIf="!activity.completed">close</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Goals -->
+        <div class="completed-goals-list" *ngIf="selectedDayCompletedGoals.length > 0">
+          <h4>{{'completed_goals'|t}}:</h4>
+          <ul>
+            <li *ngFor="let goal of selectedDayCompletedGoals">{{ goal.title }}</li>
+          </ul>
+        </div>
+        <div class="uncompleted-goals-list" *ngIf="selectedDayUncompletedGoals.length > 0">
+          <h4>{{'uncompleted_goals'|t}}:</h4>
+          <ul>
+            <li *ngFor="let goal of selectedDayUncompletedGoals">{{ goal.title }}</li>
+          </ul>
+        </div>
+        <div class="no-completions" *ngIf="selectedDayCompletedGoals.length === 0 && selectedDayUncompletedGoals.length === 0">
+          <p>{{'no_goals'|t}}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal Info Fields with Individual Edit Buttons -->
+    <div class="info-section">
+      <div class="info-section-header" (click)="toggleInfoSection()">
+        <h2>{{'update_personal_info'|t}}</h2>
+        <button type="button" class="collapse-toggle-btn">
+          <span class="icon">{{ isInfoSectionExpanded ? 'expand_less' : 'expand_more' }}</span>
+        </button>
+      </div>
+      
+      <div class="info-section-content" [class.expanded]="isInfoSectionExpanded">
+        <p class="form-description">{{'personal_info_description'|t}}</p>
+        
+        <form [formGroup]="form" (ngSubmit)="saveProfile()" class="personal-form">
+        <div class="form-group">
+          <div class="field-header">
+            <label for="firstName">{{'first_name'|t}} <span class="required">*</span></label>
+            <div class="field-actions">
+              <button type="button" class="field-edit-btn" (click)="toggleFieldEdit('firstName')" *ngIf="!isFieldEditing('firstName')">
+                <span class="icon">edit</span>
+                <span>{{'edit'|t}}</span>
+              </button>
+              <button type="button" class="checkmark-btn" *ngIf="isFieldEditing('firstName')" (click)="saveField('firstName')" [disabled]="form.get('firstName')?.invalid">
+                <span class="icon">check</span>
+                <span>{{'approve'|t}}</span>
+              </button>
+              <button type="button" class="field-close-btn" (click)="cancelFieldEdit('firstName')" *ngIf="isFieldEditing('firstName')">
+                <span class="icon">close</span>
+                <span>{{'cancel'|t}}</span>
+              </button>
+            </div>
+          </div>
           <div class="error-message" *ngIf="getFieldError('firstName')">
             {{ getFieldError('firstName') }}
           </div>
+          <div class="input-wrapper">
+            <input 
+              id="firstName"
+              type="text" 
+              formControlName="firstName" 
+              [class.error]="form.get('firstName')?.invalid && form.get('firstName')?.touched"
+              [readonly]="!isFieldEditing('firstName')"
+              placeholder="{{'enter_first_name'|t}}"
+              maxlength="12"
+              (keypress)="onNameKeyPress($event)"
+            />
+          </div>
         </div>
-        <input 
-          id="firstName"
-          type="text" 
-          formControlName="firstName" 
-          [class.error]="form.get('firstName')?.invalid && form.get('firstName')?.touched"
-          placeholder="{{'enter_first_name'|t}}"
-          maxlength="12"
-          (keypress)="onNameKeyPress($event)"
-        />
-      </div>
 
-      <div class="form-group">
-        <div class="label-row">
-          <label for="lastName">{{'last_name'|t}}</label>
+        <div class="form-group">
+          <div class="field-header">
+            <label for="lastName">{{'last_name'|t}}</label>
+            <div class="field-actions">
+              <button type="button" class="field-edit-btn" (click)="toggleFieldEdit('lastName')" *ngIf="!isFieldEditing('lastName')">
+                <span class="icon">edit</span>
+                <span>{{'edit'|t}}</span>
+              </button>
+              <button type="button" class="checkmark-btn" *ngIf="isFieldEditing('lastName')" (click)="saveField('lastName')" [disabled]="form.get('lastName')?.invalid">
+                <span class="icon">check</span>
+                <span>{{'approve'|t}}</span>
+              </button>
+              <button type="button" class="field-close-btn" (click)="cancelFieldEdit('lastName')" *ngIf="isFieldEditing('lastName')">
+                <span class="icon">close</span>
+                <span>{{'cancel'|t}}</span>
+              </button>
+            </div>
+          </div>
           <div class="error-message" *ngIf="getFieldError('lastName')">
             {{ getFieldError('lastName') }}
           </div>
+          <div class="input-wrapper">
+            <input 
+              id="lastName"
+              type="text" 
+              formControlName="lastName" 
+              [class.error]="form.get('lastName')?.invalid && form.get('lastName')?.touched"
+              [readonly]="!isFieldEditing('lastName')"
+              placeholder="{{'enter_last_name'|t}}"
+              (keypress)="onNameKeyPress($event)"
+            />
+          </div>
         </div>
-        <input 
-          id="lastName"
-          type="text" 
-          formControlName="lastName" 
-          [class.error]="form.get('lastName')?.invalid && form.get('lastName')?.touched"
-          placeholder="{{'enter_last_name'|t}}"
-          (keypress)="onNameKeyPress($event)"
-        />
-      </div>
 
-      <div class="form-group">
-        <div class="label-row">
-          <label for="age">{{'age'|t}}</label>
+        <div class="form-group">
+          <div class="field-header">
+            <label for="age">{{'age'|t}}</label>
+            <div class="field-actions">
+              <button type="button" class="field-edit-btn" (click)="toggleFieldEdit('age')" *ngIf="!isFieldEditing('age')">
+                <span class="icon">edit</span>
+                <span>{{'edit'|t}}</span>
+              </button>
+              <button type="button" class="checkmark-btn" *ngIf="isFieldEditing('age')" (click)="saveField('age')" [disabled]="form.get('age')?.invalid">
+                <span class="icon">check</span>
+                <span>{{'approve'|t}}</span>
+              </button>
+              <button type="button" class="field-close-btn" (click)="cancelFieldEdit('age')" *ngIf="isFieldEditing('age')">
+                <span class="icon">close</span>
+                <span>{{'cancel'|t}}</span>
+              </button>
+            </div>
+          </div>
           <div class="error-message" *ngIf="getFieldError('age')">
             {{ getFieldError('age') }}
           </div>
+          <div class="input-wrapper">
+            <input 
+              id="age"
+              type="number" 
+              formControlName="age" 
+              [class.error]="form.get('age')?.invalid && form.get('age')?.touched"
+              [readonly]="!isFieldEditing('age')"
+              placeholder="{{'enter_age'|t}}"
+              min="1" 
+              max="120"
+              (keypress)="onAgeKeyPress($event)"
+            />
+          </div>
         </div>
-        <input 
-          id="age"
-          type="number" 
-          formControlName="age" 
-          [class.error]="form.get('age')?.invalid && form.get('age')?.touched"
-          placeholder="{{'enter_age'|t}}"
-          min="1" 
-          max="120"
-          (keypress)="onAgeKeyPress($event)"
-        />
-      </div>
 
-      <div class="form-group">
-        <div class="label-row">
-          <label for="weight">{{'weight'|t}}</label>
+        <div class="form-group">
+          <div class="field-header">
+            <label for="weight">{{'weight'|t}}</label>
+            <div class="field-actions">
+              <button type="button" class="field-edit-btn" (click)="toggleFieldEdit('weight')" *ngIf="!isFieldEditing('weight')">
+                <span class="icon">edit</span>
+                <span>{{'edit'|t}}</span>
+              </button>
+              <button type="button" class="checkmark-btn" *ngIf="isFieldEditing('weight')" (click)="saveField('weight')" [disabled]="form.get('weight')?.invalid">
+                <span class="icon">check</span>
+                <span>{{'approve'|t}}</span>
+              </button>
+              <button type="button" class="field-close-btn" (click)="cancelFieldEdit('weight')" *ngIf="isFieldEditing('weight')">
+                <span class="icon">close</span>
+                <span>{{'cancel'|t}}</span>
+              </button>
+            </div>
+          </div>
           <div class="error-message" *ngIf="getFieldError('weight')">
             {{ getFieldError('weight') }}
           </div>
+          <div class="input-wrapper">
+            <input 
+              id="weight"
+              type="number" 
+              formControlName="weight" 
+              [class.error]="form.get('weight')?.invalid && form.get('weight')?.touched"
+              [readonly]="!isFieldEditing('weight')"
+              placeholder="{{'enter_weight'|t}}"
+              min="1" 
+              max="300"
+              (keypress)="onWeightKeyPress($event)"
+            />
+          </div>
         </div>
-        <input 
-          id="weight"
-          type="number" 
-          formControlName="weight" 
-          [class.error]="form.get('weight')?.invalid && form.get('weight')?.touched"
-          placeholder="{{'enter_weight'|t}}"
-          min="1" 
-          max="300"
-          (keypress)="onWeightKeyPress($event)"
-        />
-      </div>
 
-      <div class="form-group">
-        <div class="label-row">
-          <label for="height">{{'height'|t}}</label>
+        <div class="form-group">
+          <div class="field-header">
+            <label for="height">{{'height'|t}}</label>
+            <div class="field-actions">
+              <button type="button" class="field-edit-btn" (click)="toggleFieldEdit('height')" *ngIf="!isFieldEditing('height')">
+                <span class="icon">edit</span>
+                <span>{{'edit'|t}}</span>
+              </button>
+              <button type="button" class="checkmark-btn" *ngIf="isFieldEditing('height')" (click)="saveField('height')" [disabled]="form.get('height')?.invalid">
+                <span class="icon">check</span>
+                <span>{{'approve'|t}}</span>
+              </button>
+              <button type="button" class="field-close-btn" (click)="cancelFieldEdit('height')" *ngIf="isFieldEditing('height')">
+                <span class="icon">close</span>
+                <span>{{'cancel'|t}}</span>
+              </button>
+            </div>
+          </div>
           <div class="error-message" *ngIf="getFieldError('height')">
             {{ getFieldError('height') }}
           </div>
+          <div class="input-wrapper">
+            <input 
+              id="height"
+              type="text" 
+              formControlName="height" 
+              [class.error]="form.get('height')?.invalid && form.get('height')?.touched"
+              [readonly]="!isFieldEditing('height')"
+              placeholder="{{'enter_height'|t}}"
+              (keypress)="onHeightKeyPress($event)"
+            />
+          </div>
         </div>
-        <input 
-          id="height"
-          type="text" 
-          formControlName="height" 
-          [class.error]="form.get('height')?.invalid && form.get('height')?.touched"
-          placeholder="{{'enter_height'|t}}"
-          (keypress)="onHeightKeyPress($event)"
-        />
-      </div>
 
-      <div class="form-group">
-        <div class="label-row">
-          <label for="email">{{'email'|t}}</label>
+        <div class="form-group">
+          <div class="field-header">
+            <label for="email">{{'email'|t}}</label>
+            <div class="field-actions">
+              <button type="button" class="field-edit-btn" (click)="toggleFieldEdit('email')" *ngIf="!isFieldEditing('email')">
+                <span class="icon">edit</span>
+                <span>{{'edit'|t}}</span>
+              </button>
+              <button type="button" class="checkmark-btn" *ngIf="isFieldEditing('email')" (click)="saveField('email')" [disabled]="form.get('email')?.invalid">
+                <span class="icon">check</span>
+                <span>{{'approve'|t}}</span>
+              </button>
+              <button type="button" class="field-close-btn" (click)="cancelFieldEdit('email')" *ngIf="isFieldEditing('email')">
+                <span class="icon">close</span>
+                <span>{{'cancel'|t}}</span>
+              </button>
+            </div>
+          </div>
           <div class="error-message" *ngIf="getFieldError('email')">
             {{ getFieldError('email') }}
           </div>
+          <div class="input-wrapper">
+            <input 
+              id="email"
+              type="email" 
+              formControlName="email" 
+              [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
+              [readonly]="!isFieldEditing('email')"
+              placeholder="{{'enter_email'|t}}"
+            />
+          </div>
         </div>
-        <input 
-          id="email"
-          type="email" 
-          formControlName="email" 
-          [class.error]="form.get('email')?.invalid && form.get('email')?.touched"
-          placeholder="{{'enter_email'|t}}"
-        />
-      </div>
 
-      <div class="form-group">
-        <div class="label-row">
-          <label for="phone">{{'phone'|t}} <span class="required">*</span></label>
+        <div class="form-group">
+          <div class="field-header">
+            <label for="phone">{{'phone'|t}} <span class="required">*</span></label>
+            <div class="field-actions">
+              <button type="button" class="field-edit-btn" (click)="toggleFieldEdit('phone')" *ngIf="!isFieldEditing('phone')">
+                <span class="icon">edit</span>
+                <span>{{'edit'|t}}</span>
+              </button>
+              <button type="button" class="checkmark-btn" *ngIf="isFieldEditing('phone')" (click)="saveField('phone')" [disabled]="form.get('phone')?.invalid">
+                <span class="icon">check</span>
+                <span>{{'approve'|t}}</span>
+              </button>
+              <button type="button" class="field-close-btn" (click)="cancelFieldEdit('phone')" *ngIf="isFieldEditing('phone')">
+                <span class="icon">close</span>
+                <span>{{'cancel'|t}}</span>
+              </button>
+            </div>
+          </div>
           <div class="error-message" *ngIf="getFieldError('phone')">
             {{ getFieldError('phone') }}
           </div>
+          <div class="input-wrapper">
+            <input 
+              id="phone"
+              type="tel" 
+              formControlName="phone" 
+              [class.error]="form.get('phone')?.invalid && form.get('phone')?.touched"
+              [readonly]="!isFieldEditing('phone')"
+              placeholder="{{'enter_phone'|t}}"
+              (keypress)="onPhoneKeyPress($event)"
+            />
+          </div>
         </div>
-        <input 
-          id="phone"
-          type="tel" 
-          formControlName="phone" 
-          [class.error]="form.get('phone')?.invalid && form.get('phone')?.touched"
-          placeholder="{{'enter_phone'|t}}"
-          (keypress)="onPhoneKeyPress($event)"
-        />
-      </div>
 
-      <div class="form-actions">
-        <button type="button" class="btn-secondary" (click)="cancel()">
-          {{'cancel'|t}}
-        </button>
-        <button type="submit" class="btn-primary" [disabled]="form.invalid">
-          {{'save_changes'|t}}
+      </form>
+      </div>
+    </div>
+
+    <!-- Level Selection Section -->
+    <div class="settings-section">
+      <div class="settings-section-header" (click)="toggleLevelSection()">
+        <h2>{{'choose_level'|t}}</h2>
+        <button type="button" class="collapse-toggle-btn">
+          <span class="icon">{{ isLevelSectionExpanded ? 'expand_less' : 'expand_more' }}</span>
         </button>
       </div>
-    </form>
+      
+      <div class="settings-section-content" [class.expanded]="isLevelSectionExpanded">
+        <div class="level-options">
+          <button 
+            type="button" 
+            class="level-option" 
+            [class.selected]="selectedLevel === 'beginner'"
+            (click)="selectLevel('beginner')">
+            {{'beginner'|t}}
+          </button>
+          <button 
+            type="button" 
+            class="level-option" 
+            [class.selected]="selectedLevel === 'advanced'"
+            (click)="selectLevel('advanced')">
+            {{'advanced'|t}}
+          </button>
+          <button 
+            type="button" 
+            class="level-option" 
+            [class.selected]="selectedLevel === 'grand'"
+            (click)="selectLevel('grand')">
+            {{'grand_master'|t}}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Font Size Selection Section -->
+    <div class="settings-section">
+      <div class="settings-section-header" (click)="toggleFontSizeSection()">
+        <h2>{{'choose_font_size'|t}}</h2>
+        <button type="button" class="collapse-toggle-btn">
+          <span class="icon">{{ isFontSizeSectionExpanded ? 'expand_less' : 'expand_more' }}</span>
+        </button>
+      </div>
+      
+      <div class="settings-section-content" [class.expanded]="isFontSizeSectionExpanded">
+        <div class="font-size-options">
+          <button 
+            type="button" 
+            class="font-size-option" 
+            [class.selected]="selectedFontSize === 'small'"
+            (click)="selectFontSize('small')">
+            {{'font_size_small'|t}}
+          </button>
+          <button 
+            type="button" 
+            class="font-size-option" 
+            [class.selected]="selectedFontSize === 'medium'"
+            (click)="selectFontSize('medium')">
+            {{'font_size_medium'|t}}
+          </button>
+          <button 
+            type="button" 
+            class="font-size-option" 
+            [class.selected]="selectedFontSize === 'large'"
+            (click)="selectFontSize('large')">
+            {{'font_size_large'|t}}
+          </button>
+          <button 
+            type="button" 
+            class="font-size-option" 
+            [class.selected]="selectedFontSize === 'extra-large'"
+            (click)="selectFontSize('extra-large')">
+            {{'font_size_extra_large'|t}}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Language Selection Section -->
+    <div class="settings-section">
+      <div class="settings-section-header" (click)="toggleLanguageSection()">
+        <h2>{{'choose_language'|t}}</h2>
+        <button type="button" class="collapse-toggle-btn">
+          <span class="icon">{{ isLanguageSectionExpanded ? 'expand_less' : 'expand_more' }}</span>
+        </button>
+      </div>
+      
+      <div class="settings-section-content" [class.expanded]="isLanguageSectionExpanded">
+        <div class="language-options">
+          <button 
+            type="button" 
+            class="language-option" 
+            [class.selected]="selectedLanguage === 'he'"
+            (click)="selectLanguage('he')">
+            {{'hebrew'|t}}
+          </button>
+          <button 
+            type="button" 
+            class="language-option" 
+            [class.selected]="selectedLanguage === 'en'"
+            (click)="selectLanguage('en')">
+            {{'english'|t}}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

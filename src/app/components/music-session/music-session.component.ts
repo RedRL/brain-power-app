@@ -31,6 +31,9 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
   showCongratulations = false;
   isPlaying = false;
   volume = 100;
+  showPlayer = false; // Controls visibility of the bottom player
+  isHidingPlayer = false; // Track if player is being hidden (for animation)
+  isPlayerCollapsed = false; // Track if player is collapsed
   
   currentTrackIndex = 0;
   playedTracks = new Set<number>();
@@ -354,6 +357,43 @@ export class MusicSessionComponent implements OnInit, OnDestroy {
     } else {
       audio.pause();
     }
+    // Don't hide player when toggling from player controls - player stays visible
+  }
+
+  toggleMusicPlayer() {
+    if (!this.showPlayer) {
+      // Show player and start playing
+      this.isHidingPlayer = false;
+      this.showPlayer = true;
+      const audio = this.audioPlayer.nativeElement;
+      if (audio.paused) {
+        audio.play().catch(err => console.error('Play error:', err));
+      }
+    } else {
+      // If player is visible and playing, hide and stop (reset)
+      // If player is visible and paused, just play
+      const audio = this.audioPlayer.nativeElement;
+      if (!audio.paused) {
+        // Playing: hide and stop (reset to beginning)
+        this.isHidingPlayer = true;
+        // Wait for animation to complete before actually hiding
+        setTimeout(() => {
+          this.showPlayer = false;
+          this.isHidingPlayer = false;
+          audio.pause();
+          audio.currentTime = 0; // Reset to beginning
+          this.currentTime = 0;
+          this.progressPercentage = 0;
+        }, 400); // Match animation duration
+      } else {
+        // Paused: just play (keep player visible)
+        audio.play().catch(err => console.error('Play error:', err));
+      }
+    }
+  }
+
+  togglePlayerCollapse() {
+    this.isPlayerCollapsed = !this.isPlayerCollapsed;
   }
 
   previousTrack() {

@@ -130,6 +130,17 @@ export class GoalsComponent implements OnInit, OnDestroy {
   }
 
   toggleGoal(goal: Goal) {
+    const today = new Date().toISOString().split('T')[0];
+    const goalCompletionKey = `goal_${goal.id}_completed`;
+    
+    if (goal.done) {
+      // Goal is being completed - save completion date
+      localStorage.setItem(goalCompletionKey, today);
+    } else {
+      // Goal is being unchecked - remove completion date
+      localStorage.removeItem(goalCompletionKey);
+    }
+    
     this.dataService.saveGoals(this.goals);
     this.updateProgress();
   }

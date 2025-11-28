@@ -1,6 +1,14 @@
 ﻿<app-header [title]="'daily_routine_intro'|t"></app-header>
 
 <main class="content">
+  <div class="demo-section">
+    <button class="demo-button" (click)="playDemo()">
+      <span class="icon">play_circle</span>
+      <span>{{'play_demo'|t}}</span>
+    </button>
+    <p class="demo-description">{{'demo_description'|t}}</p>
+  </div>
+
   <h2>{{'welcome_to_routine'|t}}</h2>
   <p>{{'holistic_approach'|t}}</p>
 

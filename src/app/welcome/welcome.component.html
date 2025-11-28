@@ -4,3 +4,20 @@
   <h2>{{'welcome_title'|t}}, {{name}}!</h2>
   <button class="btn-primary" (click)="continue()">{{'continue_to_app'|t}}</button>
 </section>
+
+<!-- Demo Popup -->
+<div class="demo-popup-overlay" *ngIf="showDemoPopup" (click)="skipDemo()">
+  <div class="demo-popup" (click)="$event.stopPropagation()">
+    <h3>{{'watch_demo_title'|t}}</h3>
+    <p>{{'watch_demo_description'|t}}</p>
+    <div class="demo-popup-buttons">
+      <button class="btn-demo-yes" (click)="watchDemo()">
+        <span class="icon">play_arrow</span>
+        {{'watch_demo'|t}}
+      </button>
+      <button class="btn-demo-skip" (click)="skipDemo()">
+        {{'skip'|t}}
+      </button>
+    </div>
+  </div>
+</div>

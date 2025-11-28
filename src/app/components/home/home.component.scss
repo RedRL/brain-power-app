@@ -74,6 +74,29 @@
   font-weight: 500;
 }
 
+.ai-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(9 * 100vw / 1920);
+  position: relative;
+  z-index: 1;
+}
+
+.ai-text {
+  font-size: calc(72 * 100vw / 1920) !important;
+  font-weight: 700;
+  background: linear-gradient(135deg, #6B46C1 0%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.ai-robot-icon {
+  font-size: calc(72 * 100vw / 1920) !important;
+}
+
 .home-content {
   overflow-y: auto;
   height: calc(100vh - var(--header-height, 120px) - calc(342 * 100vw / 1920));

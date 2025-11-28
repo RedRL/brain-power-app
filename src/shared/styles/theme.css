@@ -47,7 +47,7 @@ html, body {
   background-attachment: fixed;
   color: var(--text);
   font-family: Nunito, 'Noto Sans Hebrew', 'Heebo', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans";
-  font-size: 18px;
+  font-size: var(--base-font-size, 18px);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;

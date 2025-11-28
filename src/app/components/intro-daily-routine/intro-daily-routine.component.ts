@@ -10,4 +10,11 @@ import { TPipe } from '../../shared/pipes/t.pipe';
   templateUrl: './intro-daily-routine.component.html',
   styleUrls: ['./intro-daily-routine.component.scss']
 })
-export class IntroDailyRoutineComponent {}
+export class IntroDailyRoutineComponent {
+  playDemo() {
+    // TODO: Implement demo video presentation
+    // This will show a video presentation demonstrating how to use the app
+    console.log('Play demo video');
+    alert('Demo video will be shown here');
+  }
+}

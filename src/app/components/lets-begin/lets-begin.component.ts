@@ -83,10 +83,12 @@ export class LetsBeginComponent implements OnInit {
   }
 
   startGame() {
-    // Navigate to game options component
-    this.router.navigate(['/game-options'], { 
+    // Navigate directly to memory game with level from personal area settings
+    const storedLevel = localStorage.getItem('level');
+    const gameLevel = (storedLevel === 'advanced' || storedLevel === 'grand') ? storedLevel : 'beginner';
+    this.router.navigate(['/memory-game'], { 
       queryParams: { 
-        level: this.selectedLevel 
+        level: gameLevel 
       } 
     });
   }
