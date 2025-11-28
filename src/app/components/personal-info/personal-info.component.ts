@@ -144,9 +144,11 @@ export class PersonalInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   selectLanguage(lang: 'en' | 'he') {
     this.selectedLanguage = lang;
     this.translateService.setLang(lang);
-    // Reload to apply language changes throughout the app, but stay on the same page
+    // Reload to apply language changes throughout the app
+    // Use the current URL to ensure we stay on the same page
     setTimeout(() => {
-      window.location.href = '/personal-info';
+      const currentUrl = window.location.href;
+      window.location.href = currentUrl;
     }, 100);
   }
 
