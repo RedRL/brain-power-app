@@ -64,7 +64,7 @@ export class PersonalInfoComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private fb: FormBuilder, 
     private router: Router,
-    private translateService: TranslateService,
+    public translateService: TranslateService,
     private dataService: DataService
   ) {}
 

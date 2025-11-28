@@ -6,11 +6,11 @@
     <div class="calendar-section">
       <div class="calendar-header">
         <button type="button" class="calendar-nav-btn" (click)="previousMonth()">
-          <span class="icon">chevron_left</span>
+          <span class="icon">{{ translateService.lang === 'he' ? 'chevron_right' : 'chevron_left' }}</span>
         </button>
         <h2 class="calendar-month-title">{{ monthName }}</h2>
         <button type="button" class="calendar-nav-btn" (click)="nextMonth()">
-          <span class="icon">chevron_right</span>
+          <span class="icon">{{ translateService.lang === 'he' ? 'chevron_left' : 'chevron_right' }}</span>
         </button>
       </div>
       <div class="calendar-container">
